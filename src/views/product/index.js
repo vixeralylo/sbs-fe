@@ -3,7 +3,7 @@ import useStore from '../../zustand/store'
 import { CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
 
 const ProductPages = () => {
-  const { fetchProduct, productList } = useStore((state) => state)
+  const { fetchProduct, productList, sisaPersediaan } = useStore((state) => state)
   useEffect(() => {
     fetchProduct()
   }, [fetchProduct])
@@ -20,6 +20,20 @@ const ProductPages = () => {
           <CCardBody>
             <table className="table">
               <thead>
+                <tr>
+                  <th scope="col"></th>
+                  <th scope="col"></th>
+                  <th scope="col"></th>
+                  <th scope="col"></th>
+                  <th scope="col"></th>
+                  <th scope="col">{formatter.format(sisaPersediaan)}</th>
+                  <th scope="col"></th>
+                  <th scope="col"></th>
+                  <th scope="col"></th>
+                  <th scope="col"></th>
+                  <th scope="col"></th>
+                  <th scope="col"></th>
+                </tr>
                 <tr>
                   <th scope="col">#</th>
                   <th scope="col">SKU</th>

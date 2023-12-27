@@ -8,8 +8,13 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Sales Order',
-    to: '/sales_order',
+    name: 'Tokopedia',
+    to: '/sales_order/tokopedia',
+  },
+  {
+    component: CNavItem,
+    name: 'Shopee',
+    to: '/sales_order/shopee',
   },
   {
     component: CNavItem,
