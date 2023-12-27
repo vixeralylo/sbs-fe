@@ -2,11 +2,23 @@ import React, { useEffect } from 'react'
 import useStore from '../../zustand/store'
 import { useParams } from 'react-router-dom'
 import { CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
+import { CDatePicker } from '@coreui/react-pro'
 
 const SalesOrderPages = () => {
   const { marketplace } = useParams()
 
-  const { fetchOrder, orderList, sumPrice, sumTotalPrice, sumHpp, sumMagin, sumAdmin, sumOngkir, sumCleanMargin } = useStore((state) => state)
+  const {
+    fetchOrder,
+    orderList,
+    sumPrice,
+    sumTotalPrice,
+    sumHpp,
+    sumMargin,
+    sumAdmin,
+    sumOngkir,
+    sumCleanMargin,
+  } = useStore((state) => state)
+
   useEffect(() => {
     fetchOrder(marketplace)
   }, [fetchOrder, marketplace])
@@ -21,7 +33,15 @@ const SalesOrderPages = () => {
             <strong>Sales Order</strong>
           </CCardHeader>
           <CCardBody>
-            <table className="table">
+            <div className="row">
+              <div className="col-6">
+                <CDatePicker label="Tanggal Awal" locale="id-ID" size="sm" />
+              </div>
+              <div className="col-6">
+                <CDatePicker label="Tanggal Akhir" locale="id-ID" size="sm" />
+              </div>
+            </div>
+            <table className="table mtop30">
               <thead>
                 <tr>
                   <th scope="col"></th>
@@ -31,7 +51,7 @@ const SalesOrderPages = () => {
                   <th scope="col">{formatter.format(sumPrice)}</th>
                   <th scope="col">{formatter.format(sumTotalPrice)}</th>
                   <th scope="col">{formatter.format(sumHpp)}</th>
-                  <th scope="col">{formatter.format(sumMagin)}</th>
+                  <th scope="col">{formatter.format(sumMargin)}</th>
                   <th scope="col">{formatter.format(sumAdmin)}</th>
                   <th scope="col">{formatter.format(sumOngkir)}</th>
                   <th scope="col">{formatter.format(sumCleanMargin)}</th>

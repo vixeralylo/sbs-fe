@@ -9,8 +9,7 @@ const Summary = React.lazy(() => import('./views/summary'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/product', name: 'Product', element: Product },
-  { path: '/sales_order/:marketplace', name: 'Tokopedia', element: SalesOrder },
-  { path: '/sales_order/:marketplace', name: 'Shopee', element: SalesOrder },
+  { path: '/sales_order/:marketplace', name: 'Sales Order', element: SalesOrder },
   { path: '/purchase_order', name: 'Purchase Order', element: PurchaseOrder },
   { path: '/cost', name: 'Cost', element: Cost },
   { path: '/summary', name: 'Summary', element: Summary },
