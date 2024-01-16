@@ -18,6 +18,16 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: 'Sales Order',
+    to: '/sales_order/upload',
+  },
+  {
+    component: CNavItem,
+    name: 'Update Order',
+    to: '/sales_order/update',
+  },
+  {
+    component: CNavItem,
     name: 'Purchase Order',
     to: '/purchase_order',
   },

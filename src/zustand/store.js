@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import ApiRequest from '../zustand/ApiRequest'
+import dayjs from 'dayjs'
 
 const useStore = create((set) => ({
   sisaPersediaan: 0,
@@ -12,6 +13,20 @@ const useStore = create((set) => ({
   sumCleanMargin: 0,
   productList: [],
   orderList: [],
+  startDate: '',
+  endDate: '',
+  message: '',
+  setStartDate: async (start_date) => {
+    console.log(start_date)
+    set({
+      startDate: start_date,
+    })
+  },
+  setEndDate: async (end_date) => {
+    set({
+      endDate: end_date,
+    })
+  },
   fetchProduct: async () => {
     const url = process.env.REACT_APP_API_BASE_URL + 'product'
 
@@ -19,7 +34,7 @@ const useStore = create((set) => ({
       url: url,
       method: 'GET',
     })
-    let json = await response
+    const json = await response
 
     set({
       sisaPersediaan: json.data.sisa_persediaan,
@@ -27,16 +42,20 @@ const useStore = create((set) => ({
     })
   },
   fetchOrder: async (marketplace, start_date, end_date) => {
+    const start_date_object = new Date(start_date.$d)
+    const start_date_parsed = dayjs(start_date_object).format('YYYY-MM-DD')
+    const end_date_object = new Date(end_date.$d)
+    const end_date_parsed = dayjs(end_date_object).format('YYYY-MM-DD')
     const url = process.env.REACT_APP_API_BASE_URL + 'so'
 
     const response = await ApiRequest({
       url: url,
       method: 'GET',
       marketplace_id: marketplace === 'tokopedia' ? 'Tokopedia' : 'Shopee',
-      start_date: start_date === undefined ? '2023-01-01' : start_date,
-      end_date: end_date === undefined ? '2023-12-31' : end_date,
+      start_date: start_date_parsed,
+      end_date: end_date_parsed,
     })
-    let json = await response
+    const json = await response
 
     set({
       sumPrice: json.data.sum_price,
@@ -47,6 +66,53 @@ const useStore = create((set) => ({
       sumOngkir: json.data.sum_ongkir,
       sumCleanMargin: json.data.sum_clean_margin,
       orderList: json.data.SbsOrderList,
+    })
+  },
+  uploadSalesOrder: async (file) => {
+    const url = process.env.REACT_APP_API_BASE_URL + 'so'
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await ApiRequest({
+      url: url,
+      method: 'POST',
+      formData: formData,
+    })
+    const json = await response
+
+    set({
+      message: json.responseMessage,
+    })
+  },
+  uploadPurchaseOrder: async (file) => {
+    const url = process.env.REACT_APP_API_BASE_URL + 'po'
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await ApiRequest({
+      url: url,
+      method: 'POST',
+      formData: formData,
+    })
+    const json = await response
+
+    set({
+      message: json.responseMessage,
+    })
+  },
+  updateOrder: async (soNumber, status) => {
+    const url = process.env.REACT_APP_API_BASE_URL + 'so'
+
+    const response = await ApiRequest({
+      url: url,
+      method: 'PUT',
+      soNumber: soNumber,
+      status: status,
+    })
+    const json = await response
+
+    set({
+      message: json.responseMessage,
     })
   },
 }))
