@@ -1,10 +1,14 @@
-import { CNavItem } from '@coreui/react'
+import { CNavItem, CNavTitle } from '@coreui/react'
 
 const _nav = [
   {
     component: CNavItem,
     name: 'Product',
     to: '/product',
+  },
+  {
+    component: CNavTitle,
+    name: 'Sales Order',
   },
   {
     component: CNavItem,
@@ -18,7 +22,7 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Sales Order',
+    name: 'Upload Sales Order',
     to: '/sales_order/upload',
   },
   {
@@ -27,14 +31,41 @@ const _nav = [
     to: '/sales_order/update',
   },
   {
-    component: CNavItem,
+    component: CNavTitle,
     name: 'Purchase Order',
-    to: '/purchase_order',
+  },
+  {
+    component: CNavItem,
+    name: 'List Purchase Order',
+    to: '/purchase_order/list',
+  },
+  {
+    component: CNavItem,
+    name: 'Upload Purchase Order',
+    to: '/purchase_order/upload',
+  },
+  {
+    component: CNavItem,
+    name: 'Update Purchase Order',
+    to: '/purchase_order/update',
+  },
+  {
+    component: CNavTitle,
+    name: 'COST',
   },
   {
     component: CNavItem,
     name: 'Cost',
-    to: '/cost',
+    to: '/cost/list',
+  },
+  {
+    component: CNavItem,
+    name: 'Input Cost',
+    to: '/cost/input',
+  },
+  {
+    component: CNavTitle,
+    name: '',
   },
   {
     component: CNavItem,

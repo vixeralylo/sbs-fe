@@ -7,8 +7,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import dayjs from 'dayjs'
 
-const Cost = () => {
-  const { costList, fetchCost } = useStore((state) => state)
+const PurchaseOrder = () => {
+  const { purchaseOrderList, fetchPurchaseOrder } = useStore((state) => state)
 
   const formatter = new Intl.NumberFormat('pt-BR')
 
@@ -28,15 +28,15 @@ const Cost = () => {
   const [endDate, setValueEndDate] = useState(dayjs(formattedDate))
 
   useEffect(() => {
-    fetchCost(firstDate, endDate)
-  }, [fetchCost, firstDate, endDate])
+    fetchPurchaseOrder(firstDate, endDate)
+  }, [fetchPurchaseOrder, firstDate, endDate])
 
   return (
     <CRow>
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
-            <strong>Cost List</strong>
+            <strong>Purchase Order</strong>
           </CCardHeader>
           <CCardBody>
             <div className="row align-items-end">
@@ -66,29 +66,33 @@ const Cost = () => {
             <table className="table mtop30">
               <thead>
                 <tr>
-                  <th scope="col">Cost Date</th>
-                  <th scope="col">Cost Name</th>
+                  <th scope="col">PO Date</th>
+                  <th scope="col">PO Number</th>
+                  <th scope="col">Nama Barang</th>
                   <th scope="col">Qty</th>
+                  <th scope="col">Normal Price</th>
+                  <th scope="col">Discount</th>
+                  <th scope="col">PPN</th>
                   <th scope="col">Price</th>
-                  <th scope="col">Other Price</th>
-                  <th scope="col">Total Price</th>
-                  <th scope="col">Marketplace</th>
-                  <th scope="col">Invoice No</th>
+                  <th scope="col">Status</th>
                 </tr>
               </thead>
               <tbody>
-                {costList.map((items, i) => (
+                {purchaseOrderList.map((items, i) => (
                   <tr key={i}>
-                    <td>{items.date.substring(0, 10)}</td>
-                    <td>{items.cost_name}</td>
+                    <td>{items.po_date.substring(0, 10)}</td>
+                    <td>{items.po_number}</td>
+                    <td>
+                      <b>{items.product_name}</b>
+                    </td>
                     <td>
                       <b>{items.qty}</b>
                     </td>
                     <td>{formatter.format(items.price)}</td>
-                    <td>{formatter.format(items.added_price)}</td>
+                    <td>{formatter.format(items.discount)}</td>
+                    <td>{formatter.format(items.ppn)}</td>
                     <td>{formatter.format(items.total_price)}</td>
-                    <td>{items.marketplace_id}</td>
-                    <td>{items.invoice_no}</td>
+                    <td>{items.status ? 'paid' : 'unpaid'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -100,4 +104,4 @@ const Cost = () => {
   )
 }
 
-export default Cost
+export default PurchaseOrder

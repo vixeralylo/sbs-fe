@@ -7,6 +7,13 @@ export function ApiRequest({
   formData,
   soNumber,
   status,
+  poNo,
+  costDate,
+  costName,
+  qty,
+  price,
+  addedPrice,
+  totalPrice,
 }) {
   return fetch(url, {
     method: method,
@@ -16,6 +23,13 @@ export function ApiRequest({
       end_date: end_date,
       invoice_no: soNumber,
       status: status,
+      po_no: poNo,
+      costDate: costDate,
+      costName: costName,
+      qty: qty,
+      price: price,
+      addedPrice: addedPrice,
+      totalPrice: totalPrice,
     },
     body: formData,
   })

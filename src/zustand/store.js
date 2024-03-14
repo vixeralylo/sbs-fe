@@ -13,11 +13,13 @@ const useStore = create((set) => ({
   sumCleanMargin: 0,
   productList: [],
   orderList: [],
+  purchaseOrderList: [],
+  costList: [],
   startDate: '',
   endDate: '',
+  soNumber: '',
   message: '',
   setStartDate: async (start_date) => {
-    console.log(start_date)
     set({
       startDate: start_date,
     })
@@ -41,7 +43,7 @@ const useStore = create((set) => ({
       productList: json.data.SbsProductList,
     })
   },
-  fetchOrder: async (marketplace, start_date, end_date) => {
+  fetchOrder: async (marketplace, start_date, end_date, soNumber) => {
     const start_date_object = new Date(start_date.$d)
     const start_date_parsed = dayjs(start_date_object).format('YYYY-MM-DD')
     const end_date_object = new Date(end_date.$d)
@@ -54,6 +56,7 @@ const useStore = create((set) => ({
       marketplace_id: marketplace === 'tokopedia' ? 'Tokopedia' : 'Shopee',
       start_date: start_date_parsed,
       end_date: end_date_parsed,
+      soNumber: soNumber,
     })
     const json = await response
 
@@ -108,6 +111,105 @@ const useStore = create((set) => ({
       method: 'PUT',
       soNumber: soNumber,
       status: status,
+    })
+    const json = await response
+
+    set({
+      message: json.responseMessage,
+    })
+  },
+  removeOrder: async (soNumber) => {
+    const url = process.env.REACT_APP_API_BASE_URL + 'so'
+
+    const response = await ApiRequest({
+      url: url,
+      method: 'DELETE',
+      soNumber: soNumber,
+    })
+    const json = await response
+
+    set({
+      message: json.responseMessage,
+    })
+  },
+  fetchPurchaseOrder: async (start_date, end_date) => {
+    const start_date_object = new Date(start_date.$d)
+    const start_date_parsed = dayjs(start_date_object).format('YYYY-MM-DD')
+    const end_date_object = new Date(end_date.$d)
+    const end_date_parsed = dayjs(end_date_object).format('YYYY-MM-DD')
+    const url = process.env.REACT_APP_API_BASE_URL + 'po'
+
+    const response = await ApiRequest({
+      url: url,
+      method: 'GET',
+      start_date: start_date_parsed,
+      end_date: end_date_parsed,
+    })
+    const json = await response
+
+    set({
+      purchaseOrderList: json.data,
+    })
+  },
+  updatePurchaseOrder: async (poNumber, status) => {
+    const url = process.env.REACT_APP_API_BASE_URL + 'po'
+
+    const response = await ApiRequest({
+      url: url,
+      method: 'PUT',
+      poNo: poNumber,
+      status: status,
+    })
+    const json = await response
+
+    set({
+      message: json.responseMessage,
+    })
+  },
+  fetchCost: async (start_date, end_date) => {
+    const start_date_object = new Date(start_date.$d)
+    const start_date_parsed = dayjs(start_date_object).format('YYYY-MM-DD')
+    const end_date_object = new Date(end_date.$d)
+    const end_date_parsed = dayjs(end_date_object).format('YYYY-MM-DD')
+    const url = process.env.REACT_APP_API_BASE_URL + 'cost'
+
+    const response = await ApiRequest({
+      url: url,
+      method: 'GET',
+      start_date: start_date_parsed,
+      end_date: end_date_parsed,
+    })
+    const json = await response
+
+    set({
+      costList: json.data,
+    })
+  },
+  submitCost: async ({
+    costDate,
+    costName,
+    qty,
+    price,
+    otherPrice,
+    totalPrice,
+    marketplaceId,
+    invoiceNo,
+  }) => {
+    const cost_date_object = new Date(costDate.$d)
+    const cost_date_parsed = dayjs(cost_date_object).format('YYYY-MM-DD')
+    const url = process.env.REACT_APP_API_BASE_URL + 'cost'
+
+    const response = await ApiRequest({
+      url: url,
+      method: 'POST',
+      costDate: cost_date_parsed,
+      costName: costName,
+      qty: qty,
+      price: price,
+      addedPrice: otherPrice,
+      totalPrice: totalPrice,
+      marketplace_id: marketplaceId,
+      soNumber: invoiceNo,
     })
     const json = await response
 

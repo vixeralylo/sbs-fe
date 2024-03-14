@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import useStore from '../../zustand/store'
 import { useParams } from 'react-router-dom'
-import { CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
+import { CCard, CCardBody, CCardHeader, CCol, CRow, CFormLabel, CFormInput } from '@coreui/react'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -21,6 +21,7 @@ const SalesOrderPages = () => {
     sumAdmin,
     sumOngkir,
     sumCleanMargin,
+    removeOrder,
   } = useStore((state) => state)
 
   const formatter = new Intl.NumberFormat('pt-BR')
@@ -39,10 +40,25 @@ const SalesOrderPages = () => {
     .replace(/\//g, '/')
   const [firstDate, setValueFirstDate] = useState(dayjs(firstDay))
   const [endDate, setValueEndDate] = useState(dayjs(formattedDate))
+  const [soNumber, setValueSo] = useState('')
+
+  const handleSoChange = (event) => {
+    setValueSo(event.target.value)
+  }
+
+  const handleRemoveOrder = (soNumber) => {
+    // Display a confirmation dialog before deleting
+    const isConfirmed = window.confirm('Yakin ingin menghapus pesanan ini?')
+
+    if (isConfirmed) {
+      removeOrder(soNumber)
+      setValueSo('')
+    }
+  }
 
   useEffect(() => {
-    fetchOrder(marketplace, firstDate, endDate)
-  }, [fetchOrder, marketplace, firstDate, endDate])
+    fetchOrder(marketplace, firstDate, endDate, soNumber)
+  }, [fetchOrder, marketplace, firstDate, endDate, soNumber])
 
   return (
     <CRow>
@@ -54,10 +70,10 @@ const SalesOrderPages = () => {
           <CCardBody>
             <div className="row align-items-end">
               <div className="col-3">
+                <CFormLabel htmlFor="exampleFormControlInput1">Tanggal Awal</CFormLabel>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={['DatePicker', 'DatePicker']}>
                     <DatePicker
-                      label="Tanggal Awal"
                       value={firstDate}
                       onChange={(newValue) => setValueFirstDate(newValue)}
                     />
@@ -65,15 +81,21 @@ const SalesOrderPages = () => {
                 </LocalizationProvider>
               </div>
               <div className="col-3">
+                <CFormLabel htmlFor="exampleFormControlInput1">Tanggal Akhir</CFormLabel>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={['DatePicker', 'DatePicker']}>
                     <DatePicker
-                      label="Tanggal Akhir"
                       value={endDate}
                       onChange={(newValue) => setValueEndDate(newValue)}
                     />
                   </DemoContainer>
                 </LocalizationProvider>
+              </div>
+              <div className="col-6 align-item-end">
+                <div className="mb-3">
+                  <CFormLabel htmlFor="exampleFormControlInput1">So Number</CFormLabel>
+                  <CFormInput type="text" id="exampleFormControlInput1" onChange={handleSoChange} />
+                </div>
               </div>
             </div>
             <table className="table mtop30">
@@ -123,6 +145,14 @@ const SalesOrderPages = () => {
                     <td>{formatter.format(items.power_merchant_fee)}</td>
                     <td>{formatter.format(items.ongkir_fee)}</td>
                     <td>{formatter.format(Math.round(items.clean_margin))}</td>
+                    <td>
+                      <p
+                        onClick={() => handleRemoveOrder(items.invoice_no)}
+                        className="remove_order"
+                      >
+                        Cancel
+                      </p>
+                    </td>
                   </tr>
                 ))}
               </tbody>
