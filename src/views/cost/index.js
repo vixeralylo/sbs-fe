@@ -67,6 +67,7 @@ const Cost = () => {
               <thead>
                 <tr>
                   <th scope="col">Cost Date</th>
+                  <th scope="col">Cost Type</th>
                   <th scope="col">Cost Name</th>
                   <th scope="col">Qty</th>
                   <th scope="col">Price</th>
@@ -80,6 +81,7 @@ const Cost = () => {
                 {costList.map((items, i) => (
                   <tr key={i}>
                     <td>{items.date.substring(0, 10)}</td>
+                    <td>{items.cost_type}</td>
                     <td>{items.cost_name}</td>
                     <td>
                       <b>{items.qty}</b>

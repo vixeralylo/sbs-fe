@@ -17,6 +17,9 @@ $enable-rtl: true;
 @import "custom";
 
 .remove_order {
-    color: red;
-    cursor: pointer;
+  color: red;
+  cursor: pointer;
+}
+.bold-row {
+  font-weight: bold;
 }

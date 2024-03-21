@@ -15,6 +15,7 @@ const useStore = create((set) => ({
   orderList: [],
   purchaseOrderList: [],
   costList: [],
+  summaryList: [],
   startDate: '',
   endDate: '',
   soNumber: '',
@@ -186,6 +187,7 @@ const useStore = create((set) => ({
     })
   },
   submitCost: async ({
+    costType,
     costDate,
     costName,
     qty,
@@ -202,6 +204,7 @@ const useStore = create((set) => ({
     const response = await ApiRequest({
       url: url,
       method: 'POST',
+      costType: costType,
       costDate: cost_date_parsed,
       costName: costName,
       qty: qty,
@@ -215,6 +218,19 @@ const useStore = create((set) => ({
 
     set({
       message: json.responseMessage,
+    })
+  },
+  fetchSummary: async () => {
+    const url = process.env.REACT_APP_API_BASE_URL + 'summary'
+
+    const response = await ApiRequest({
+      url: url,
+      method: 'GET',
+    })
+    const json = await response
+
+    set({
+      summaryList: json.data,
     })
   },
 }))

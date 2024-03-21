@@ -21,6 +21,7 @@ import dayjs from 'dayjs'
 const CostInput = () => {
   const { submitCost, message } = useStore((state) => state)
 
+  const [costType, setCostType] = useState('')
   const [costName, setCostName] = useState('')
   const [qty, setQty] = useState('')
   const [price, setPrice] = useState('')
@@ -42,6 +43,9 @@ const CostInput = () => {
     .replace(/\//g, '/')
   const [costDate, setValueCostDate] = useState(dayjs(formattedDate))
 
+  const handleTypeChange = (e) => {
+    setCostType(e.target.value)
+  }
   const handleNameChange = (e) => {
     setCostName(e.target.value)
   }
@@ -65,6 +69,7 @@ const CostInput = () => {
   }
   const handleUpdate = async () => {
     submitCost({
+      costType: costType,
       costDate: costDate,
       costName: costName,
       qty: qty,
@@ -84,6 +89,22 @@ const CostInput = () => {
             <strong>Input Cost</strong>
           </CCardHeader>
           <CCardBody>
+            <div className="mb-3">
+              <CFormSelect
+                aria-label="Default select example"
+                onChange={handleTypeChange}
+                value={costType}
+                label="Cost Type"
+              >
+                <option>Select</option>
+                <option value="Gaji">Gaji</option>
+                <option value="Pln">Pln</option>
+                <option value="Ads">Ads</option>
+                <option value="Material">Material</option>
+                <option value="Profit">Take Profit</option>
+                <option value="Loss">Loss</option>
+              </CFormSelect>
+            </div>
             <div className="mb-3">
               <InputLabel id="demo-simple-select-label">Date</InputLabel>
               <LocalizationProvider dateAdapter={AdapterDayjs}>

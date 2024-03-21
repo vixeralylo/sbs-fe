@@ -65,7 +65,7 @@ const _nav = [
   },
   {
     component: CNavTitle,
-    name: '',
+    name: 'SUMAMRY',
   },
   {
     component: CNavItem,
