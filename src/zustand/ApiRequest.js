@@ -15,6 +15,9 @@ export function ApiRequest({
   price,
   addedPrice,
   totalPrice,
+  isNotPayment,
+  soDate,
+  sku,
 }) {
   return fetch(url, {
     method: method,
@@ -27,11 +30,14 @@ export function ApiRequest({
       po_no: poNo,
       costType: costType,
       costDate: costDate,
+      soDate: soDate,
       costName: costName,
       qty: qty,
       price: price,
       addedPrice: addedPrice,
       totalPrice: totalPrice,
+      is_not_payment: isNotPayment,
+      sku: sku,
     },
     body: formData,
   })

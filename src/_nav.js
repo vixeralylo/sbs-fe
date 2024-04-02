@@ -31,6 +31,11 @@ const _nav = [
     to: '/sales_order/update',
   },
   {
+    component: CNavItem,
+    name: 'Offline',
+    to: '/sales_order_offline',
+  },
+  {
     component: CNavTitle,
     name: 'Purchase Order',
   },

@@ -2,6 +2,7 @@ import React from 'react'
 
 const Product = React.lazy(() => import('./views/product'))
 const SalesOrder = React.lazy(() => import('./views/sales_order'))
+const SalesOrderOffline = React.lazy(() => import('./views/sales_order/offline'))
 const SalesOrderUpload = React.lazy(() => import('./views/sales_order/upload'))
 const SalesOrderUpdate = React.lazy(() => import('./views/sales_order/update'))
 const PurchaseOrder = React.lazy(() => import('./views/purchase_order'))
@@ -17,6 +18,7 @@ const routes = [
   { path: '/sales_order/:marketplace', name: 'Sales Order', element: SalesOrder },
   { path: '/sales_order/upload', name: 'Sales Order', element: SalesOrderUpload },
   { path: '/sales_order/update', name: 'Sales Order', element: SalesOrderUpdate },
+  { path: '/sales_order_offline', name: 'Sales Order Offline', element: SalesOrderOffline },
   { path: '/purchase_order/list', name: 'Purchase Order', element: PurchaseOrder },
   { path: '/purchase_order/upload', name: 'Purchase Order', element: UploadPurchaseOrder },
   { path: '/purchase_order/update', name: 'Purchase Order', element: PurchaseOrderUpdate },

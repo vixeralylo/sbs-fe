@@ -44,7 +44,7 @@ const useStore = create((set) => ({
       productList: json.data.SbsProductList,
     })
   },
-  fetchOrder: async (marketplace, start_date, end_date, soNumber) => {
+  fetchOrder: async (marketplace, start_date, end_date, soNumber, isNotPayment) => {
     const start_date_object = new Date(start_date.$d)
     const start_date_parsed = dayjs(start_date_object).format('YYYY-MM-DD')
     const end_date_object = new Date(end_date.$d)
@@ -54,10 +54,11 @@ const useStore = create((set) => ({
     const response = await ApiRequest({
       url: url,
       method: 'GET',
-      marketplace_id: marketplace === 'tokopedia' ? 'Tokopedia' : 'Shopee',
+      marketplace_id: marketplace,
       start_date: start_date_parsed,
       end_date: end_date_parsed,
       soNumber: soNumber,
+      isNotPayment: !isNotPayment,
     })
     const json = await response
 
@@ -210,6 +211,28 @@ const useStore = create((set) => ({
       qty: qty,
       price: price,
       addedPrice: otherPrice,
+      totalPrice: totalPrice,
+      marketplace_id: marketplaceId,
+      soNumber: invoiceNo,
+    })
+    const json = await response
+
+    set({
+      message: json.responseMessage,
+    })
+  },
+  submitSoOffline: async ({ soDate, sku, qty, price, totalPrice, marketplaceId, invoiceNo }) => {
+    const so_date_object = new Date(soDate.$d)
+    const so_date_parsed = dayjs(so_date_object).format('YYYY-MM-DD')
+    const url = process.env.REACT_APP_API_BASE_URL + 'so_manual'
+
+    const response = await ApiRequest({
+      url: url,
+      method: 'POST',
+      soDate: so_date_parsed,
+      sku: sku,
+      qty: qty,
+      price: price,
       totalPrice: totalPrice,
       marketplace_id: marketplaceId,
       soNumber: invoiceNo,

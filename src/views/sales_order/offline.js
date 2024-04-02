@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from 'react'
+import InputLabel from '@mui/material/InputLabel'
 import useStore from '../../zustand/store'
-import { useParams } from 'react-router-dom'
-import { CCard, CCardBody, CCardHeader, CCol, CRow, CFormLabel, CFormInput } from '@coreui/react'
+import {
+  CCard,
+  CCardBody,
+  CCardHeader,
+  CCol,
+  CRow,
+  CFormLabel,
+  CFormInput,
+  CButton,
+} from '@coreui/react'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -9,22 +18,10 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import dayjs from 'dayjs'
 
 const SalesOrderPages = () => {
-  const { marketplace } = useParams()
-
-  const {
-    fetchOrder,
-    orderList,
-    sumPrice,
-    sumTotalPrice,
-    sumHpp,
-    sumMargin,
-    sumAdmin,
-    sumOngkir,
-    sumCleanMargin,
-    removeOrder,
-  } = useStore((state) => state)
-
-  const formatter = new Intl.NumberFormat('pt-BR')
+  const [sku, setSku] = useState('')
+  const [qty, setQty] = useState('')
+  const [price, setPrice] = useState('')
+  const [totalPrice, setTotalPrice] = useState('')
 
   // Get the current date
   const currentDate = new Date()
@@ -38,35 +35,110 @@ const SalesOrderPages = () => {
       day: '2-digit',
     })
     .replace(/\//g, '/')
+  const [soDate, setValueSoDate] = useState(dayjs(formattedDate))
+
+  const {
+    fetchOrder,
+    orderList,
+    sumPrice,
+    sumTotalPrice,
+    sumHpp,
+    sumMargin,
+    sumAdmin,
+    sumOngkir,
+    sumCleanMargin,
+    submitSoOffline,
+    message,
+  } = useStore((state) => state)
+
+  const formatter = new Intl.NumberFormat('pt-BR')
+
   const [firstDate, setValueFirstDate] = useState(dayjs(firstDay))
   const [endDate, setValueEndDate] = useState(dayjs(formattedDate))
-  const [isNotPayment, setValueIsNotPayment] = useState('')
-  const [soNumber, setValueSo] = useState('')
-
-  const handleSoChange = (event) => {
-    setValueSo(event.target.value)
-  }
-
-  const handleisNotPaymentChange = (event) => {
-    setValueIsNotPayment(event.target.checked)
-  }
-
-  const handleRemoveOrder = (soNumber) => {
-    // Display a confirmation dialog before deleting
-    const isConfirmed = window.confirm('Yakin ingin menghapus pesanan ini?')
-
-    if (isConfirmed) {
-      removeOrder(soNumber)
-      setValueSo('')
-    }
-  }
 
   useEffect(() => {
-    fetchOrder(marketplace, firstDate, endDate, soNumber, isNotPayment)
-  }, [fetchOrder, marketplace, firstDate, endDate, soNumber, isNotPayment])
+    fetchOrder('offline', firstDate, endDate, '')
+  }, [fetchOrder, firstDate, endDate])
+
+  const handleSkuChange = (e) => {
+    setSku(e.target.value)
+  }
+  const handleQtyChange = (e) => {
+    setQty(e.target.value)
+    setTotalPrice(parseInt(e.target.value * price, 10))
+  }
+  const handlePriceChange = (e) => {
+    setPrice(e.target.value)
+    setTotalPrice(parseInt(e.target.value * qty, 10))
+  }
+  const handleUpdate = async () => {
+    submitSoOffline({
+      soDate: soDate,
+      sku: sku,
+      qty: qty,
+      price: price,
+      totalPrice: totalPrice,
+      marketplaceId: 'Offline',
+      invoice_no: '',
+    })
+  }
 
   return (
     <CRow>
+      <CCol xs={12}>
+        <CCard className="mb-4">
+          <CCardHeader>
+            <strong>Input Offline</strong>
+          </CCardHeader>
+          <CCardBody>
+            <div className="mb-3">
+              <InputLabel id="demo-simple-select-label">Date</InputLabel>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={['DatePicker', 'DatePicker']}>
+                  <DatePicker value={soDate} onChange={(newValue) => setValueSoDate(newValue)} />
+                </DemoContainer>
+              </LocalizationProvider>
+            </div>
+            <div className="mb-3">
+              <CFormLabel>SKU</CFormLabel>
+              <CFormInput type="text" id="inputName" value={sku} onChange={handleSkuChange} />
+            </div>
+            <div className="row">
+              <div className="col-1">
+                <div className="mb-3">
+                  <CFormLabel>Qty</CFormLabel>
+                  <CFormInput type="number" id="inputQty" value={qty} onChange={handleQtyChange} />
+                </div>
+              </div>
+              <div className="col-4">
+                <div className="mb-3">
+                  <CFormLabel>Price</CFormLabel>
+                  <CFormInput
+                    type="number"
+                    id="inputPrice"
+                    value={price}
+                    onChange={handlePriceChange}
+                  />
+                </div>
+              </div>
+              <div className="col-4">
+                <div className="mb-3">
+                  <CFormLabel>Total Price</CFormLabel>
+                  <CFormInput disabled type="number" id="inputPrice" value={totalPrice} />
+                </div>
+              </div>
+            </div>
+            <div className="mb-3">
+              <CButton color="primary" onClick={() => handleUpdate()}>
+                Submit
+              </CButton>
+            </div>
+            <div className="mb-3">
+              <span id="Message">{message}</span>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
@@ -95,24 +167,6 @@ const SalesOrderPages = () => {
                     />
                   </DemoContainer>
                 </LocalizationProvider>
-              </div>
-              <div className="col-3">
-                <div className="form-check">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value="1"
-                    id="flexCheckDefault"
-                    onChange={(newValue) => handleisNotPaymentChange(newValue)}
-                  ></input>
-                  <label className="form-check-label">Is Not Payment</label>
-                </div>
-              </div>
-              <div className="col-3 align-item-end">
-                <div className="mb-3">
-                  <CFormLabel htmlFor="exampleFormControlInput1">So Number</CFormLabel>
-                  <CFormInput type="text" id="exampleFormControlInput1" onChange={handleSoChange} />
-                </div>
               </div>
             </div>
             <table className="table mtop30">
@@ -162,14 +216,6 @@ const SalesOrderPages = () => {
                     <td>{formatter.format(items.power_merchant_fee)}</td>
                     <td>{formatter.format(items.ongkir_fee)}</td>
                     <td>{formatter.format(Math.round(items.clean_margin))}</td>
-                    <td>
-                      <p
-                        onClick={() => handleRemoveOrder(items.invoice_no)}
-                        className="remove_order"
-                      >
-                        Cancel
-                      </p>
-                    </td>
                   </tr>
                 ))}
               </tbody>
