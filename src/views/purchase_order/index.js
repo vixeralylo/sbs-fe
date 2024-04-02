@@ -26,10 +26,15 @@ const PurchaseOrder = () => {
     .replace(/\//g, '/')
   const [firstDate, setValueFirstDate] = useState(dayjs(firstDay))
   const [endDate, setValueEndDate] = useState(dayjs(formattedDate))
+  const [isNotPayment, setValueIsNotPayment] = useState('')
+
+  const handleisNotPaymentChange = (event) => {
+    setValueIsNotPayment(event.target.checked)
+  }
 
   useEffect(() => {
-    fetchPurchaseOrder(firstDate, endDate)
-  }, [fetchPurchaseOrder, firstDate, endDate])
+    fetchPurchaseOrder(firstDate, endDate, isNotPayment)
+  }, [fetchPurchaseOrder, firstDate, endDate, isNotPayment])
 
   return (
     <CRow>
@@ -62,6 +67,18 @@ const PurchaseOrder = () => {
                   </DemoContainer>
                 </LocalizationProvider>
               </div>
+              <div className="col-3">
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    value="1"
+                    id="flexCheckDefault"
+                    onChange={(newValue) => handleisNotPaymentChange(newValue)}
+                  ></input>
+                  <label className="form-check-label">Is Not Payment</label>
+                </div>
+              </div>
             </div>
             <table className="table mtop30">
               <thead>
@@ -92,7 +109,7 @@ const PurchaseOrder = () => {
                     <td>{formatter.format(items.discount)}</td>
                     <td>{formatter.format(items.ppn)}</td>
                     <td>{formatter.format(items.total_price)}</td>
-                    <td>{items.status ? 'paid' : 'unpaid'}</td>
+                    <td>{items.is_payment ? 'paid' : 'unpaid'}</td>
                   </tr>
                 ))}
               </tbody>

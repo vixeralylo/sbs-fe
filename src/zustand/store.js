@@ -134,21 +134,20 @@ const useStore = create((set) => ({
       message: json.responseMessage,
     })
   },
-  fetchPurchaseOrder: async (start_date, end_date) => {
+  fetchPurchaseOrder: async (start_date, end_date, isNotPayment) => {
     const start_date_object = new Date(start_date.$d)
     const start_date_parsed = dayjs(start_date_object).format('YYYY-MM-DD')
     const end_date_object = new Date(end_date.$d)
     const end_date_parsed = dayjs(end_date_object).format('YYYY-MM-DD')
     const url = process.env.REACT_APP_API_BASE_URL + 'po'
-
     const response = await ApiRequest({
       url: url,
       method: 'GET',
       start_date: start_date_parsed,
       end_date: end_date_parsed,
+      isNotPayment: !isNotPayment,
     })
     const json = await response
-
     set({
       purchaseOrderList: json.data,
     })
