@@ -2,6 +2,10 @@ import { CNavItem, CNavTitle } from '@coreui/react'
 
 const _nav = [
   {
+    component: CNavTitle,
+    name: 'Product',
+  },
+  {
     component: CNavItem,
     name: 'Product',
     to: '/product',
