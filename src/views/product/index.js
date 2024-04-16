@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import TableRow from './TableRow' // Import the new component
 import useStore from '../../zustand/store'
 import { CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
 
@@ -50,25 +51,8 @@ const ProductPages = () => {
                 </tr>
               </thead>
               <tbody>
-                {productList.map((items, i) => (
-                  <tr key={i}>
-                    <td>{i + 1}</td>
-                    <td>{items.sku}</td>
-                    <td>
-                      <b>{items.product_name}</b>
-                    </td>
-                    <td>
-                      <b>{items.stock}</b>
-                    </td>
-                    <td>{formatter.format(items.hpp)}</td>
-                    <td>{formatter.format(items.stock * items.hpp)}</td>
-                    <td>{formatter.format(items.price)}</td>
-                    <td>{formatter.format(items.gross)}</td>
-                    <td>{formatter.format(items.admin)}</td>
-                    <td>{formatter.format(items.ongkir)}</td>
-                    <td>{formatter.format(Math.round(items.clean_margin))}</td>
-                    <td>{items.pct} %</td>
-                  </tr>
+                {productList.map((item, index) => (
+                  <TableRow key={index} item={item} index={index} formatter={formatter} />
                 ))}
               </tbody>
             </table>

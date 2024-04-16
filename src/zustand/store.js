@@ -93,7 +93,6 @@ const useStore = create((set) => ({
     const url = process.env.REACT_APP_API_BASE_URL + 'po'
     const formData = new FormData()
     formData.append('file', file)
-
     const response = await ApiRequest({
       url: url,
       method: 'POST',
@@ -253,6 +252,21 @@ const useStore = create((set) => ({
 
     set({
       summaryList: json.data,
+    })
+  },
+  updateProductQty: async (sku, qty) => {
+    const url = process.env.REACT_APP_API_BASE_URL + 'product'
+
+    const response = await ApiRequest({
+      url: url,
+      method: 'PUT',
+      sku: sku,
+      qty: qty,
+    })
+    const json = await response
+    console.log(json)
+    set({
+      message: json.responseMessage,
     })
   },
 }))
