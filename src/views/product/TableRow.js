@@ -9,9 +9,10 @@ const TableRow = ({ item, index, formatter }) => {
 
   const [updatedStock, setUpdatedStock] = useState(item.stock)
   const [updatedHpp, setUpdatedHpp] = useState(item.hpp)
+  const [updatedPrice, setUpdatedPrice] = useState(item.price)
 
   const handleUpdate = (sku) => {
-    updateProduct(sku, updatedStock, updatedHpp)
+    updateProduct(sku, updatedStock, updatedHpp, updatedPrice)
   }
 
   const handleUpdateQty = (e) => {
@@ -22,6 +23,11 @@ const TableRow = ({ item, index, formatter }) => {
   const handleUpdateHpp = (e) => {
     const newHpp = e.target.value.replace(/,/g, '')
     setUpdatedHpp(newHpp)
+  }
+
+  const handleUpdatePrice = (e) => {
+    const newPrice = e.target.value.replace(/,/g, '')
+    setUpdatedPrice(newPrice)
   }
 
   return (
@@ -56,7 +62,14 @@ const TableRow = ({ item, index, formatter }) => {
         )}
       </td>
       <td>{item.product_name !== '' ? formatter.format(item.stock * item.hpp) : ''}</td>
-      <td>{item.product_name !== '' ? formatter.format(item.price) : ''}</td>
+      <td>
+        <NumericFormat
+          className="price_field"
+          value={item.price}
+          thousandSeparator={true}
+          onChange={(e) => handleUpdatePrice(e, item.sku)}
+        />
+      </td>
       <td>{item.product_name !== '' ? formatter.format(item.gross) : ''}</td>
       <td>{item.product_name !== '' ? formatter.format(item.admin) : ''}</td>
       <td>{item.product_name !== '' ? formatter.format(item.ongkir) : ''}</td>

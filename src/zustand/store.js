@@ -254,7 +254,7 @@ const useStore = create((set) => ({
       summaryList: json.data,
     })
   },
-  updateProduct: async (sku, qty, hpp) => {
+  updateProduct: async (sku, qty, hpp, price) => {
     const url = process.env.REACT_APP_API_BASE_URL + 'product'
     const response = await ApiRequest({
       url: url,
@@ -262,6 +262,7 @@ const useStore = create((set) => ({
       sku: sku,
       qty: qty,
       hpp: hpp,
+      price: price,
     })
     const json = await response
     set({
