@@ -133,6 +133,21 @@ const useStore = create((set) => ({
       message: json.responseMessage,
     })
   },
+  removePO: async (poNumber, sku) => {
+    const url = process.env.REACT_APP_API_BASE_URL + 'po'
+
+    const response = await ApiRequest({
+      url: url,
+      method: 'DELETE',
+      poNo: poNumber,
+      sku: sku,
+    })
+    const json = await response
+
+    set({
+      message: json.responseMessage,
+    })
+  },
   fetchPurchaseOrder: async (start_date, end_date, isNotPayment) => {
     const start_date_object = new Date(start_date.$d)
     const start_date_parsed = dayjs(start_date_object).format('YYYY-MM-DD')

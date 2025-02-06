@@ -43,6 +43,7 @@ const TableRow = ({ item, index, formatter }) => {
             className="qty_field"
             type="number"
             defaultValue={item.stock}
+            size={1}
             onChange={(e) => handleUpdateQty(e, item.sku)}
           />
         ) : (
@@ -63,12 +64,17 @@ const TableRow = ({ item, index, formatter }) => {
       </td>
       <td>{item.product_name !== '' ? formatter.format(item.stock * item.hpp) : ''}</td>
       <td>
-        <NumericFormat
-          className="price_field"
-          value={item.price}
-          thousandSeparator={true}
-          onChange={(e) => handleUpdatePrice(e, item.sku)}
-        />
+        {item.product_name !== '' ? (
+          <NumericFormat
+            className="price_field"
+            value={item.price}
+            thousandSeparator={true}
+            size={5}
+            onChange={(e) => handleUpdatePrice(e, item.sku)}
+          />
+        ) : (
+          ''
+        )}
       </td>
       <td>{item.product_name !== '' ? formatter.format(item.gross) : ''}</td>
       <td>{item.product_name !== '' ? formatter.format(item.admin) : ''}</td>

@@ -8,7 +8,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import dayjs from 'dayjs'
 
 const PurchaseOrder = () => {
-  const { purchaseOrderList, fetchPurchaseOrder } = useStore((state) => state)
+  const { purchaseOrderList, fetchPurchaseOrder, removePO } = useStore((state) => state)
 
   const formatter = new Intl.NumberFormat('pt-BR')
 
@@ -30,6 +30,15 @@ const PurchaseOrder = () => {
 
   const handleisNotPaymentChange = (event) => {
     setValueIsNotPayment(event.target.checked)
+  }
+
+  const handleRemoveOrder = (poNumber, sku) => {
+    // Display a confirmation dialog before deleting
+    const isConfirmed = window.confirm('Yakin ingin menghapus pesanan ini?')
+
+    if (isConfirmed) {
+      removePO(poNumber, sku)
+    }
   }
 
   useEffect(() => {
@@ -110,6 +119,14 @@ const PurchaseOrder = () => {
                     <td>{formatter.format(items.ppn)}</td>
                     <td>{formatter.format(items.total_price)}</td>
                     <td>{items.is_payment ? 'paid' : 'unpaid'}</td>
+                    <td>
+                      <p
+                        onClick={() => handleRemoveOrder(items.po_number, items.sku)}
+                        className="remove_order"
+                      >
+                        Cancel
+                      </p>
+                    </td>
                   </tr>
                 ))}
               </tbody>
