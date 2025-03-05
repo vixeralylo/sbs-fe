@@ -30,10 +30,6 @@ const ProductPages = () => {
                   <th scope="col">{formatter.format(sisaPersediaan)}</th>
                   <th scope="col"></th>
                   <th scope="col"></th>
-                  <th scope="col"></th>
-                  <th scope="col"></th>
-                  <th scope="col"></th>
-                  <th scope="col"></th>
                 </tr>
                 <tr>
                   <th scope="col">#</th>
@@ -44,10 +40,8 @@ const ProductPages = () => {
                   <th scope="col">Sisa Persediaan</th>
                   <th scope="col">Harga Jual</th>
                   <th scope="col">Gross</th>
-                  <th scope="col">Admin</th>
-                  <th scope="col">Ongkir</th>
-                  <th scope="col">Clean Margin</th>
-                  <th scope="col">%</th>
+                  <th scope="col">Margin Tok</th>
+                  <th scope="col">Margin Sho</th>
                 </tr>
               </thead>
               <tbody>

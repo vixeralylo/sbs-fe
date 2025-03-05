@@ -77,10 +77,36 @@ const TableRow = ({ item, index, formatter }) => {
         )}
       </td>
       <td>{item.product_name !== '' ? formatter.format(item.gross) : ''}</td>
-      <td>{item.product_name !== '' ? formatter.format(item.admin) : ''}</td>
-      <td>{item.product_name !== '' ? formatter.format(item.ongkir) : ''}</td>
-      <td>{item.product_name !== '' ? formatter.format(Math.round(item.clean_margin)) : ''}</td>
-      <td>{item.product_name !== '' ? item.pct + ' %' : ''}</td>
+      <td>
+        {item.product_name !== '' && item.sku !== 'BUBBLE' ? (
+          <>
+            <NumericFormat
+              className="hpp_field"
+              value={item.clean_margin_tok}
+              thousandSeparator={true}
+              disabled
+            />
+            + {item.pct_tok} %
+          </>
+        ) : (
+          ''
+        )}
+      </td>
+      <td>
+        {item.product_name !== '' && item.sku !== 'BUBBLE' ? (
+          <>
+            <NumericFormat
+              className="hpp_field"
+              value={item.clean_margin_sho}
+              thousandSeparator={true}
+              disabled
+            />
+            + {item.pct_sho} %
+          </>
+        ) : (
+          ''
+        )}
+      </td>
       <td>
         {item.product_name !== '' ? (
           <CButton size="sm" color="primary" onClick={() => handleUpdate(item.sku, item.stock)}>
