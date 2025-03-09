@@ -154,12 +154,18 @@ const useStore = create((set) => ({
     const end_date_object = new Date(end_date.$d)
     const end_date_parsed = dayjs(end_date_object).format('YYYY-MM-DD')
     const url = process.env.REACT_APP_API_BASE_URL + 'po'
+    const formData = {
+      start_date: start_date_parsed,
+      end_date: end_date_parsed,
+      isNotPayment: !isNotPayment,
+    }
     const response = await ApiRequest({
       url: url,
       method: 'GET',
       start_date: start_date_parsed,
       end_date: end_date_parsed,
       isNotPayment: !isNotPayment,
+      formData: formData,
     })
     const json = await response
     set({
