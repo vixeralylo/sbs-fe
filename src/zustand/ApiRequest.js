@@ -1,6 +1,8 @@
-export function ApiRequest({
+import axios from 'axios'
+
+export async function ApiRequest({
   url,
-  method,
+  method = 'GET',
   marketplace_id,
   start_date,
   end_date,
@@ -20,39 +22,39 @@ export function ApiRequest({
   soDate,
   sku,
 }) {
-  return fetch(url, {
-    method: method,
-    headers: {
-      marketplace_id: marketplace_id,
-      start_date: start_date,
-      end_date: end_date,
+  try {
+    const headers = {
+      marketplace_id,
+      start_date,
+      end_date,
       invoice_no: soNumber,
-      status: status,
+      status,
       po_no: poNo,
-      costType: costType,
-      costDate: costDate,
-      soDate: soDate,
-      costName: costName,
-      qty: qty,
-      hpp: hpp,
-      price: price,
-      addedPrice: addedPrice,
-      totalPrice: totalPrice,
+      costType,
+      costDate,
+      soDate,
+      costName,
+      qty,
+      hpp,
+      price,
+      addedPrice,
+      totalPrice,
       is_not_payment: isNotPayment,
-      sku: sku,
-    },
-    body: formData,
-  })
-    .then((res) => res)
-    .then(
-      (result) => {
-        return result.json()
-      },
-      (error) => {
-        console.log(error)
-        return ''
-      },
-    )
+      sku,
+    }
+
+    const response = await axios({
+      url,
+      method,
+      headers,
+      data: formData,
+    })
+
+    return response.data
+  } catch (error) {
+    console.error(error)
+    return ''
+  }
 }
 
 export default ApiRequest
