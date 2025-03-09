@@ -31,11 +31,11 @@ const useStore = create((set) => ({
     })
   },
   fetchProduct: async () => {
-    const url = process.env.REACT_APP_API_BASE_URL + 'product'
+    const url = process.env.REACT_APP_API_BASE_URL + 'product/get'
 
     const response = await ApiRequest({
       url: url,
-      method: 'GET',
+      method: 'POST',
     })
     const json = await response
 
@@ -49,16 +49,19 @@ const useStore = create((set) => ({
     const start_date_parsed = dayjs(start_date_object).format('YYYY-MM-DD')
     const end_date_object = new Date(end_date.$d)
     const end_date_parsed = dayjs(end_date_object).format('YYYY-MM-DD')
-    const url = process.env.REACT_APP_API_BASE_URL + 'so'
-
-    const response = await ApiRequest({
-      url: url,
-      method: 'GET',
+    const url = process.env.REACT_APP_API_BASE_URL + 'so/get'
+    const formData = JSON.stringify({
       marketplace_id: marketplace,
       start_date: start_date_parsed,
       end_date: end_date_parsed,
-      soNumber: soNumber,
-      isNotPayment: !isNotPayment,
+      invoice_no: soNumber,
+      is_not_payment: isNotPayment.toString() === 'true' ? 'false' : 'true',
+    })
+
+    const response = await ApiRequest({
+      url: url,
+      method: 'POST',
+      formData: formData,
     })
     const json = await response
 
@@ -74,7 +77,7 @@ const useStore = create((set) => ({
     })
   },
   uploadSalesOrder: async (file) => {
-    const url = process.env.REACT_APP_API_BASE_URL + 'so'
+    const url = process.env.REACT_APP_API_BASE_URL + 'so/post'
     const formData = new FormData()
     formData.append('file', file)
 
@@ -90,7 +93,7 @@ const useStore = create((set) => ({
     })
   },
   uploadPurchaseOrder: async (file) => {
-    const url = process.env.REACT_APP_API_BASE_URL + 'po'
+    const url = process.env.REACT_APP_API_BASE_URL + 'po/post'
     const formData = new FormData()
     formData.append('file', file)
     const response = await ApiRequest({
@@ -105,13 +108,18 @@ const useStore = create((set) => ({
     })
   },
   updateOrder: async (soNumber, status) => {
-    const url = process.env.REACT_APP_API_BASE_URL + 'so'
+    const url = process.env.REACT_APP_API_BASE_URL + 'so/put'
+    const formData = JSON.stringify({
+      invoice_no: soNumber,
+      status: status,
+    })
 
     const response = await ApiRequest({
       url: url,
-      method: 'PUT',
+      method: 'POST',
       soNumber: soNumber,
       status: status,
+      formData: formData,
     })
     const json = await response
 
@@ -120,12 +128,16 @@ const useStore = create((set) => ({
     })
   },
   removeOrder: async (soNumber) => {
-    const url = process.env.REACT_APP_API_BASE_URL + 'so'
+    const url = process.env.REACT_APP_API_BASE_URL + 'so/delete'
+    const formData = JSON.stringify({
+      invoice_no: soNumber,
+    })
 
     const response = await ApiRequest({
       url: url,
-      method: 'DELETE',
+      method: 'POST',
       soNumber: soNumber,
+      formData: formData,
     })
     const json = await response
 
@@ -134,13 +146,18 @@ const useStore = create((set) => ({
     })
   },
   removePO: async (poNumber, sku) => {
-    const url = process.env.REACT_APP_API_BASE_URL + 'po'
+    const url = process.env.REACT_APP_API_BASE_URL + 'po/delete'
+    const formData = JSON.stringify({
+      po_no: poNumber,
+      sku: sku,
+    })
 
     const response = await ApiRequest({
       url: url,
-      method: 'DELETE',
+      method: 'POST',
       poNo: poNumber,
       sku: sku,
+      formData: formData,
     })
     const json = await response
 
@@ -153,15 +170,15 @@ const useStore = create((set) => ({
     const start_date_parsed = dayjs(start_date_object).format('YYYY-MM-DD')
     const end_date_object = new Date(end_date.$d)
     const end_date_parsed = dayjs(end_date_object).format('YYYY-MM-DD')
-    const url = process.env.REACT_APP_API_BASE_URL + 'po'
-    const formData = {
+    const url = process.env.REACT_APP_API_BASE_URL + 'po/get'
+    const formData = JSON.stringify({
       start_date: start_date_parsed,
       end_date: end_date_parsed,
-      isNotPayment: !isNotPayment,
-    }
+      is_not_payment: isNotPayment.toString() === 'true' ? 'false' : 'true',
+    })
     const response = await ApiRequest({
       url: url,
-      method: 'GET',
+      method: 'POST',
       start_date: start_date_parsed,
       end_date: end_date_parsed,
       isNotPayment: !isNotPayment,
@@ -173,13 +190,18 @@ const useStore = create((set) => ({
     })
   },
   updatePurchaseOrder: async (poNumber, status) => {
-    const url = process.env.REACT_APP_API_BASE_URL + 'po'
+    const url = process.env.REACT_APP_API_BASE_URL + 'po/put'
+    const formData = JSON.stringify({
+      po_no: poNumber,
+      status: status,
+    })
 
     const response = await ApiRequest({
       url: url,
-      method: 'PUT',
+      method: 'POST',
       poNo: poNumber,
       status: status,
+      formData: formData,
     })
     const json = await response
 
@@ -192,13 +214,18 @@ const useStore = create((set) => ({
     const start_date_parsed = dayjs(start_date_object).format('YYYY-MM-DD')
     const end_date_object = new Date(end_date.$d)
     const end_date_parsed = dayjs(end_date_object).format('YYYY-MM-DD')
-    const url = process.env.REACT_APP_API_BASE_URL + 'cost'
+    const url = process.env.REACT_APP_API_BASE_URL + 'cost/get'
+    const formData = JSON.stringify({
+      start_date: start_date_parsed,
+      end_date: end_date_parsed,
+    })
 
     const response = await ApiRequest({
       url: url,
-      method: 'GET',
+      method: 'POST',
       start_date: start_date_parsed,
       end_date: end_date_parsed,
+      formData: formData,
     })
     const json = await response
 
@@ -219,7 +246,18 @@ const useStore = create((set) => ({
   }) => {
     const cost_date_object = new Date(costDate.$d)
     const cost_date_parsed = dayjs(cost_date_object).format('YYYY-MM-DD')
-    const url = process.env.REACT_APP_API_BASE_URL + 'cost'
+    const url = process.env.REACT_APP_API_BASE_URL + 'cost/post'
+    const formData = JSON.stringify({
+      cost_type: costType,
+      cost_date: cost_date_parsed,
+      cost_name: costName,
+      qty: qty,
+      price: price,
+      added_price: otherPrice,
+      total_price: totalPrice,
+      marketplace_id: marketplaceId,
+      invoice_no: invoiceNo,
+    })
 
     const response = await ApiRequest({
       url: url,
@@ -233,6 +271,7 @@ const useStore = create((set) => ({
       totalPrice: totalPrice,
       marketplace_id: marketplaceId,
       soNumber: invoiceNo,
+      formData: formData,
     })
     const json = await response
 
@@ -243,7 +282,16 @@ const useStore = create((set) => ({
   submitSoOffline: async ({ soDate, sku, qty, price, totalPrice, marketplaceId, invoiceNo }) => {
     const so_date_object = new Date(soDate.$d)
     const so_date_parsed = dayjs(so_date_object).format('YYYY-MM-DD')
-    const url = process.env.REACT_APP_API_BASE_URL + 'so_manual'
+    const url = process.env.REACT_APP_API_BASE_URL + 'so_manual/post'
+    const formData = JSON.stringify({
+      so_date: so_date_parsed,
+      sku: sku,
+      qty: qty,
+      price: price,
+      total_price: totalPrice,
+      marketplace_id: marketplaceId,
+      invoice_no: invoiceNo,
+    })
 
     const response = await ApiRequest({
       url: url,
@@ -255,6 +303,7 @@ const useStore = create((set) => ({
       totalPrice: totalPrice,
       marketplace_id: marketplaceId,
       soNumber: invoiceNo,
+      formData: formData,
     })
     const json = await response
 
@@ -263,11 +312,11 @@ const useStore = create((set) => ({
     })
   },
   fetchSummary: async () => {
-    const url = process.env.REACT_APP_API_BASE_URL + 'summary'
+    const url = process.env.REACT_APP_API_BASE_URL + 'summary/get'
 
     const response = await ApiRequest({
       url: url,
-      method: 'GET',
+      method: 'POST',
     })
     const json = await response
 
@@ -276,14 +325,22 @@ const useStore = create((set) => ({
     })
   },
   updateProduct: async (sku, qty, hpp, price) => {
-    const url = process.env.REACT_APP_API_BASE_URL + 'product'
-    const response = await ApiRequest({
-      url: url,
-      method: 'PUT',
+    const url = process.env.REACT_APP_API_BASE_URL + 'product/put'
+    const formData = JSON.stringify({
       sku: sku,
       qty: qty,
       hpp: hpp,
       price: price,
+    })
+
+    const response = await ApiRequest({
+      url: url,
+      method: 'POST',
+      sku: sku,
+      qty: qty,
+      hpp: hpp,
+      price: price,
+      formData: formData,
     })
     const json = await response
     set({
