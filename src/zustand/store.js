@@ -251,10 +251,10 @@ const useStore = create((set) => ({
       cost_type: costType,
       cost_date: cost_date_parsed,
       cost_name: costName,
-      qty: qty,
-      price: price,
-      added_price: otherPrice,
-      total_price: totalPrice,
+      qty: String(qty),
+      price: String(price),
+      added_price: String(otherPrice),
+      total_price: String(totalPrice),
       marketplace_id: marketplaceId,
       invoice_no: invoiceNo,
     })
@@ -286,9 +286,9 @@ const useStore = create((set) => ({
     const formData = JSON.stringify({
       so_date: so_date_parsed,
       sku: sku,
-      qty: qty,
-      price: price,
-      total_price: totalPrice,
+      qty: String(qty),
+      price: String(price),
+      total_price: String(totalPrice),
       marketplace_id: marketplaceId,
       invoice_no: invoiceNo,
     })
@@ -327,10 +327,10 @@ const useStore = create((set) => ({
   updateProduct: async (sku, qty, hpp, price) => {
     const url = process.env.REACT_APP_API_BASE_URL + 'product/put'
     const formData = JSON.stringify({
-      sku: sku,
-      qty: qty,
-      hpp: hpp,
-      price: price,
+      sku: String(sku),
+      qty: String(qty),
+      hpp: String(hpp),
+      price: String(price),
     })
 
     const response = await ApiRequest({
