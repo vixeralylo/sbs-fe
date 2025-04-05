@@ -57,7 +57,7 @@ const SalesOrderPages = () => {
   const [endDate, setValueEndDate] = useState(dayjs(formattedDate))
 
   useEffect(() => {
-    fetchOrder('offline', firstDate, endDate, '')
+    fetchOrder('offline', firstDate, endDate, '', '')
   }, [fetchOrder, firstDate, endDate])
 
   const handleSkuChange = (e) => {
