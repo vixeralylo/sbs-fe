@@ -33,6 +33,8 @@ const useStore = create((set) => ({
   fetchProduct: async () => {
     const url = process.env.REACT_APP_API_BASE_URL + 'product/get'
 
+    console.log(url)
+
     const response = await ApiRequest({
       url: url,
       method: 'POST',
