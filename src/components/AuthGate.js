@@ -60,18 +60,13 @@ const AuthGate = ({ children }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const match = VALID_USERS.find(
-      (u) => u.username === username.trim() && u.password === password,
-    )
+    const match = VALID_USERS.find((u) => u.username === username.trim() && u.password === password)
     if (!match) {
       setError('Username atau password salah.')
       return
     }
     const expiresAt = new Date(Date.now() + SESSION_DURATION_MS).toISOString()
-    localStorage.setItem(
-      SESSION_KEY,
-      JSON.stringify({ user: match.username, expiresAt }),
-    )
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ user: match.username, expiresAt }))
     setError('')
     setUsername('')
     setPassword('')
@@ -111,9 +106,7 @@ const AuthGate = ({ children }) => {
           <CButton type="submit" color="primary" className="w-100">
             Masuk
           </CButton>
-          <p className="text-muted text-center small mt-3 mb-0">
-            Sesi akan aktif selama 1 jam.
-          </p>
+          <p className="text-muted text-center small mt-3 mb-0">Sesi akan aktif selama 1 jam.</p>
         </CForm>
       </CModalBody>
     </CModal>
