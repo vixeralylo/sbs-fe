@@ -19,7 +19,8 @@
     "start": "react-scripts start",
     "test": "react-scripts test",
     "test:cov": "npm test -- --coverage --watchAll=false",
-    "test:debug": "react-scripts --inspect-brk test --runInBand"
+    "test:debug": "react-scripts --inspect-brk test --runInBand",
+    "deploy": "npm run build && git add -A build && git commit -m \"chore: rebuild\" && git push"
   },
   "dependencies": {
     "@coreui/chartjs": "^3.1.2",

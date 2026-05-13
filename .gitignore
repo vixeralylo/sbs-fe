@@ -9,7 +9,7 @@ yarn.lock
 /coverage
 
 # production
-# /build
+# /build folder DI-COMMIT ke git (build dilakukan di lokal, server tinggal pull)
 
 # misc
 .eslintcache
