@@ -32,7 +32,7 @@ const AppSidebar = () => {
         </div>
         <div className="col-1"></div>
         <div className="col-8">
-          <h6>Super Baby Store</h6>
+          <h6>Indo Boga</h6>
         </div>
       </CSidebarBrand>
       <CSidebarNav>
