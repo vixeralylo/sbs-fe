@@ -111,10 +111,15 @@ const useStore = create((set) => ({
       formData: formData,
     })
     const json = await response
+    const ok = Boolean(json) && json.httpOk === true
 
     set({
       message: json.responseMessage,
     })
+    return {
+      ok,
+      message: (json && json.responseMessage) || (ok ? 'Berhasil' : 'Gagal upload purchase order'),
+    }
   },
   updateOrder: async (soNumber, status) => {
     const url = process.env.REACT_APP_API_BASE_URL + 'so/put'
@@ -131,10 +136,15 @@ const useStore = create((set) => ({
       formData: formData,
     })
     const json = await response
+    const ok = Boolean(json) && json.httpOk === true
 
     set({
       message: json.responseMessage,
     })
+    return {
+      ok,
+      message: (json && json.responseMessage) || (ok ? 'Berhasil' : 'Gagal update sales order'),
+    }
   },
   removeOrder: async (soNumber) => {
     const url = process.env.REACT_APP_API_BASE_URL + 'so/delete'
@@ -218,10 +228,15 @@ const useStore = create((set) => ({
       formData: formData,
     })
     const json = await response
+    const ok = Boolean(json) && json.httpOk === true
 
     set({
       message: json.responseMessage,
     })
+    return {
+      ok,
+      message: (json && json.responseMessage) || (ok ? 'Berhasil' : 'Gagal update purchase order'),
+    }
   },
   fetchCost: async (start_date, end_date) => {
     const start_date_object = new Date(start_date.$d)
@@ -288,10 +303,15 @@ const useStore = create((set) => ({
       formData: formData,
     })
     const json = await response
+    const ok = Boolean(json) && json.httpOk === true
 
     set({
       message: json.responseMessage,
     })
+    return {
+      ok,
+      message: (json && json.responseMessage) || (ok ? 'Berhasil' : 'Gagal menyimpan cost'),
+    }
   },
   submitSoOffline: async ({ soDate, sku, qty, price, totalPrice, marketplaceId, invoiceNo }) => {
     const so_date_object = new Date(soDate.$d)
@@ -320,10 +340,15 @@ const useStore = create((set) => ({
       formData: formData,
     })
     const json = await response
+    const ok = Boolean(json) && json.httpOk === true
 
     set({
       message: json.responseMessage,
     })
+    return {
+      ok,
+      message: (json && json.responseMessage) || (ok ? 'Berhasil' : 'Gagal menyimpan data offline'),
+    }
   },
   fetchSummary: async () => {
     const url = process.env.REACT_APP_API_BASE_URL + 'summary/get'

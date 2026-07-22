@@ -26,12 +26,7 @@ const SalesOrderUpload = () => {
 
   const notify = (ok, message) => {
     setToast(
-      <CToast
-        autohide
-        visible
-        delay={2000}
-        className={`text-white ${ok ? 'bg-success' : 'bg-danger'}`}
-      >
+      <CToast autohide={false} visible className={`text-white ${ok ? 'bg-success' : 'bg-danger'}`}>
         <div className="d-flex">
           <CToastBody>{message || (ok ? 'Berhasil' : 'Gagal')}</CToastBody>
           <CToastClose className="me-2 m-auto" white />

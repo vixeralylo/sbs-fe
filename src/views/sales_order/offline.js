@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import InputLabel from '@mui/material/InputLabel'
 import useStore from '../../zustand/store'
+import useToast from '../../components/useToast'
 import {
   CCard,
   CCardBody,
@@ -48,8 +49,8 @@ const SalesOrderPages = () => {
     sumOngkir,
     sumCleanMargin,
     submitSoOffline,
-    message,
   } = useStore((state) => state)
+  const { notify, toasterElement } = useToast()
 
   const formatter = new Intl.NumberFormat('pt-BR')
 
@@ -72,7 +73,7 @@ const SalesOrderPages = () => {
     setTotalPrice(parseInt(e.target.value * qty, 10))
   }
   const handleUpdate = async () => {
-    submitSoOffline({
+    const result = await submitSoOffline({
       soDate: soDate,
       sku: sku,
       qty: qty,
@@ -81,6 +82,8 @@ const SalesOrderPages = () => {
       marketplaceId: 'Offline',
       invoice_no: '',
     })
+    const ok = result ? result.ok : false
+    notify(ok, result && result.message)
   }
 
   return (
@@ -132,9 +135,6 @@ const SalesOrderPages = () => {
               <CButton color="primary" onClick={() => handleUpdate()}>
                 Submit
               </CButton>
-            </div>
-            <div className="mb-3">
-              <span id="Message">{message}</span>
             </div>
           </CCardBody>
         </CCard>
@@ -223,6 +223,7 @@ const SalesOrderPages = () => {
           </CCardBody>
         </CCard>
       </CCol>
+      {toasterElement}
     </CRow>
   )
 }

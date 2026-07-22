@@ -38,23 +38,13 @@ body {
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
-// ---- Layout: sidebar overlays content (never pushes it) ------------
-// Content always uses the full viewport width. When the sidebar is opened
-// it slides over the content instead of shrinking it.
-.wrapper {
-  padding-left: 0 !important;
-}
-.sidebar.sidebar-fixed {
-  z-index: 1035;                 // sit above sticky header + content
-}
-// Dark backdrop shown while the sidebar is open — click to close
-.sidebar-backdrop-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1034;                 // just behind the sidebar, above content
-  background: rgba(16, 24, 40, .45);
-  backdrop-filter: blur(1px);
-  cursor: pointer;
+// ---- Layout: sidebar is always open and pushes content ------------
+// The sidebar occupies space on the left and the content shifts to the
+// right so it stays fully visible and interactive (no overlay/backdrop).
+@media (min-width: 992px) {
+  .wrapper {
+    @include ltr-rtl("padding-left", var(--cui-sidebar-occupy-start, 16rem));
+  }
 }
 // Close (X) button pinned to the top-right of the sidebar
 .sidebar-close-btn {

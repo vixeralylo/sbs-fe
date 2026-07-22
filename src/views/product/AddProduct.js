@@ -29,7 +29,7 @@ const emptyForm = {
 }
 
 const AddProduct = ({ onAdded, onNotify }) => {
-  const { addProduct, message } = useStore((state) => state)
+  const { addProduct } = useStore((state) => state)
 
   const [visible, setVisible] = useState(false)
   const [form, setForm] = useState(emptyForm)
@@ -196,11 +196,6 @@ const AddProduct = ({ onAdded, onNotify }) => {
                 <CFormFeedback invalid>Wajib diisi.</CFormFeedback>
               </CCol>
             </CRow>
-            {message ? (
-              <div className="mt-1">
-                <small id="Message">{message}</small>
-              </div>
-            ) : null}
           </CModalBody>
           <CModalFooter>
             <CButton color="secondary" variant="ghost" onClick={() => setVisible(false)}>
