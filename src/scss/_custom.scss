@@ -1,27 +1,370 @@
-// Here you can add other styles
-table tr th, table tr td {
-    font-size: 12px;
+// =====================================================================
+//  SBS — Modern UI theme layer (overrides CoreUI defaults)
+//  All custom look & feel lives here. No component logic is changed.
+// =====================================================================
+
+// ---- Design tokens -------------------------------------------------
+:root {
+  --sbs-primary: #4f46e5;      // indigo
+  --sbs-primary-600: #4338ca;
+  --sbs-primary-50: #eef2ff;
+  --sbs-accent: #0ea5e9;
+  --sbs-success: #16a34a;
+  --sbs-danger: #dc2626;
+  --sbs-bg: #f4f6fb;
+  --sbs-card: #ffffff;
+  --sbs-border: #e6e9f2;
+  --sbs-text: #1f2437;
+  --sbs-muted: #6b7280;
+  --sbs-radius: 14px;
+  --sbs-radius-sm: 10px;
+  --sbs-shadow: 0 1px 2px rgba(16, 24, 40, .04), 0 8px 24px rgba(16, 24, 40, .06);
+  --sbs-shadow-sm: 0 1px 2px rgba(16, 24, 40, .06);
+
+  // Map onto CoreUI variables so native components pick up the palette
+  --cui-primary: var(--sbs-primary);
+  --cui-primary-rgb: 79, 70, 229;
+  --cui-body-bg: var(--sbs-bg);
+  --cui-body-color: var(--sbs-text);
+  --cui-border-color: var(--sbs-border);
 }
-.mtop30{
-    margin-top: 30px;
+
+// ---- Base ----------------------------------------------------------
+body {
+  background-color: var(--sbs-bg);
+  color: var(--sbs-text);
+  font-size: .9rem;              // slightly smaller so more fits on screen
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
-.css-1jy569b-MuiFormLabel-root-MuiInputLabel-root{
-    line-height: 3em !important;
+
+// ---- Layout: sidebar overlays content (never pushes it) ------------
+// Content always uses the full viewport width. When the sidebar is opened
+// it slides over the content instead of shrinking it.
+.wrapper {
+  padding-left: 0 !important;
 }
-.css-4jnixx-MuiStack-root>.MuiTextField-root{
-    width: 100%;
+.sidebar.sidebar-fixed {
+  z-index: 1035;                 // sit above sticky header + content
 }
-.css-nxo287-MuiInputBase-input-MuiOutlinedInput-input{
-    padding: 9px 14px !important;
+// Dark backdrop shown while the sidebar is open — click to close
+.sidebar-backdrop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1034;                 // just behind the sidebar, above content
+  background: rgba(16, 24, 40, .45);
+  backdrop-filter: blur(1px);
+  cursor: pointer;
 }
-.qty_field{
-    width: 60px;
-    font-weight: bold;
+// Close (X) button pinned to the top-right of the sidebar
+.sidebar-close-btn {
+  position: absolute;
+  top: .6rem;
+  right: .6rem;
+  z-index: 2;
+  filter: invert(1) grayscale(1) brightness(2);
+  opacity: .8;
 }
-.hpp_field{
-    width: 80px;
-    font-weight: bold;
+.sidebar-close-btn:hover {
+  opacity: 1;
 }
-.table .emptyTr td{
-    background-color: green;
+.body.flex-grow-1 {
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
+
+// ---- Cards ---------------------------------------------------------
+.card {
+  border: 1px solid var(--sbs-border);
+  border-radius: var(--sbs-radius);
+  box-shadow: var(--sbs-shadow);
+  background: var(--sbs-card);
+  overflow: hidden;
+  transition: box-shadow .2s ease, transform .2s ease;
+}
+.card:hover {
+  box-shadow: 0 2px 4px rgba(16, 24, 40, .06), 0 12px 32px rgba(16, 24, 40, .09);
+}
+.card-header {
+  background: transparent;
+  border-bottom: 1px solid var(--sbs-border);
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+}
+.card-header strong {
+  font-size: .88rem;
+  letter-spacing: .2px;
+}
+.card-body {
+  padding: 1.25rem;
+}
+
+// ---- Buttons -------------------------------------------------------
+.btn {
+  border-radius: var(--sbs-radius-sm);
+  font-weight: 600;
+  letter-spacing: .2px;
+  padding: .5rem 1rem;
+  transition: filter .15s ease, transform .05s ease, box-shadow .15s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary {
+  --cui-btn-bg: var(--sbs-primary);
+  --cui-btn-border-color: var(--sbs-primary);
+  --cui-btn-hover-bg: var(--sbs-primary-600);
+  --cui-btn-hover-border-color: var(--sbs-primary-600);
+  --cui-btn-active-bg: var(--sbs-primary-600);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, .25);
+}
+.btn-sm { border-radius: 8px; }
+
+// ---- Forms ---------------------------------------------------------
+.form-control,
+.form-select {
+  border-radius: var(--sbs-radius-sm);
+  border-color: var(--sbs-border);
+  padding: .55rem .8rem;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--sbs-primary);
+  box-shadow: 0 0 0 3px var(--sbs-primary-50);
+}
+.form-label {
+  font-weight: 600;
+  font-size: .8rem;
+  color: var(--sbs-muted);
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  margin-bottom: .35rem;
+}
+
+// ---- Tables --------------------------------------------------------
+.card .table {
+  margin-bottom: 0;
+  --cui-table-hover-bg: var(--sbs-primary-50);
+}
+.table > thead th {
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--sbs-muted);
+  font-weight: 700;
+  border-bottom: 1px solid var(--sbs-border);
+  padding: .45rem .6rem;
+  white-space: nowrap;
+  background: #fafbff;
+}
+.table > tbody td {
+  padding: .3rem .6rem;
+  vertical-align: middle;
+  line-height: 1.25;
+  border-bottom: 1px solid #f0f2f8;
+  color: var(--sbs-text);
+}
+.table tr th,
+.table tr td {
+  font-size: 11.5px;
+}
+.table > tbody tr:hover td {
+  background: var(--sbs-primary-50);
+}
+.table > tbody tr.normal td b {
+  font-weight: 600;
+}
+
+// Section separator rows (previously ugly green) -> subtle divider
+.table .emptyTr td {
+  background-color: #f4f6fb !important;
+  height: 10px;
+  padding: 0 !important;
+  border-bottom: 1px solid var(--sbs-border);
+}
+
+// Horizontal scroll wrapper so wide tables never clip content
+.table-responsive {
+  border-radius: var(--sbs-radius-sm);
+}
+
+// Keep the action column (Submit) pinned to the right, always visible
+.table .col-action {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  text-align: center;
+  background: #fff;
+  box-shadow: -10px 0 12px -10px rgba(16, 24, 40, .18);
+}
+.table > thead .col-action {
+  background: #fafbff;
+}
+// Compact submit button in the action column
+.table .col-action .btn {
+  padding: .25rem .55rem;
+  font-size: .72rem;
+  border-radius: 7px;
+}
+.table > tbody tr:hover .col-action {
+  background: var(--sbs-primary-50);
+}
+.table .emptyTr .col-action {
+  background: #f4f6fb;
+}
+
+// Inline editable numeric fields inside tables
+.qty_field,
+.hpp_field,
+.price_field {
+  border: 1px solid var(--sbs-border);
+  border-radius: 8px;
+  padding: .15rem .45rem;
+  font-weight: 600;
+  background: #fff;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.qty_field { width: 64px; text-align: center; }
+.hpp_field { width: 96px; }
+.price_field { width: 110px; }
+.qty_field:focus,
+.hpp_field:focus,
+.price_field:focus,
+.pct_field:focus {
+  outline: none;
+  border-color: var(--sbs-primary);
+  box-shadow: 0 0 0 3px var(--sbs-primary-50);
+}
+
+// Fee cell: editable percentage on top, resulting amount (muted) below
+.fee-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+}
+.pct-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.pct_field {
+  width: 54px;
+  border: 1px solid var(--sbs-border);
+  border-radius: 8px;
+  padding: .12rem .35rem;
+  font-weight: 600;
+  text-align: right;
+  background: #fff;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.pct-suffix {
+  font-weight: 700;
+  color: var(--sbs-muted);
+  font-size: .72rem;
+}
+.fee-amount {
+  color: var(--sbs-muted);
+  font-size: .72rem;
+  font-weight: 600;
+}
+.hpp_field:disabled {
+  background: #f7f8fb;
+  color: var(--sbs-muted);
+}
+
+// ---- Sidebar -------------------------------------------------------
+.sidebar {
+  --cui-sidebar-bg: #12172b;
+  --cui-sidebar-nav-link-active-bg: var(--sbs-primary);
+  --cui-sidebar-nav-link-hover-bg: rgba(255, 255, 255, .06);
+  border-right: none;
+  box-shadow: 2px 0 16px rgba(16, 24, 40, .08);
+}
+.sidebar-nav .nav-title {
+  color: rgba(255, 255, 255, .45);
+  font-size: .7rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding-top: 1rem;
+}
+.sidebar-nav .nav-link {
+  border-radius: 8px;
+  margin: 2px 10px;
+  padding: .55rem .75rem;
+  font-weight: 500;
+}
+.sidebar-nav .nav-link.active {
+  background: var(--sbs-primary);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, .35);
+}
+.sidebar-brand {
+  background: #0d1122;
+}
+
+// ---- Header --------------------------------------------------------
+.header {
+  background: rgba(255, 255, 255, .8);
+  backdrop-filter: saturate(150%) blur(8px);
+  border-bottom: 1px solid var(--sbs-border);
+}
+.header .breadcrumb {
+  font-size: .85rem;
+  --cui-breadcrumb-active-color: var(--sbs-text);
+}
+
+// ---- Misc badges / helpers ----------------------------------------
+.remove_order { color: var(--sbs-danger); cursor: pointer; }
+.bold-row { font-weight: 700; }
+.mtop30 { margin-top: 30px; }
+
+// Summary stat chip in card header (e.g. Total Sisa Persediaan)
+.total-stok {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--sbs-muted);
+  background: var(--sbs-primary-50);
+  border: 1px solid #e0e3f5;
+  border-radius: 999px;
+  padding: .35rem .85rem;
+}
+.total-stok b {
+  font-size: .95rem;
+  color: var(--sbs-primary-600);
+  letter-spacing: normal;
+}
+
+// Margin badge (percentage pill)
+.margin-pct {
+  display: inline-block;
+  margin-left: .4rem;
+  padding: .1rem .45rem;
+  border-radius: 999px;
+  background: var(--sbs-primary-50);
+  color: var(--sbs-primary-600);
+  font-weight: 700;
+  font-size: .72rem;
+}
+
+// Margin cell: value on top, percentage pill underneath
+.margin-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+}
+.margin-cell .margin-val {
+  font-weight: 600;
+}
+.margin-cell .margin-pct {
+  margin-left: 0;
+}
+
+// MUI date-picker / label tweaks kept from original
+.css-1jy569b-MuiFormLabel-root-MuiInputLabel-root { line-height: 3em !important; }
+.css-4jnixx-MuiStack-root > .MuiTextField-root { width: 100%; }
+.css-nxo287-MuiInputBase-input-MuiOutlinedInput-input { padding: 9px 14px !important; }

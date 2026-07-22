@@ -100,6 +100,7 @@ const CostInput = () => {
                 <option value="Gaji">Gaji</option>
                 <option value="Pln">Pln</option>
                 <option value="Ads">Ads</option>
+                <option value="Affiliate">Affiliate</option>
                 <option value="Material">Material</option>
                 <option value="Profit">Take Profit</option>
                 <option value="Loss">Loss</option>

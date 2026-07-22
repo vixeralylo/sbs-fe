@@ -10,6 +10,7 @@ const useStore = create((set) => ({
   sumMargin: 0,
   sumAdmin: 0,
   sumOngkir: 0,
+  sumTax: 0,
   sumCleanMargin: 0,
   productList: [],
   orderList: [],
@@ -74,6 +75,7 @@ const useStore = create((set) => ({
       sumMargin: json.data.sum_margin,
       sumAdmin: json.data.sum_admin,
       sumOngkir: json.data.sum_ongkir,
+      sumTax: json.data.sum_tax,
       sumCleanMargin: json.data.sum_clean_margin,
       orderList: json.data.SbsOrderList,
     })
@@ -89,10 +91,15 @@ const useStore = create((set) => ({
       formData: formData,
     })
     const json = await response
+    const ok = Boolean(json) && json.httpOk === true
 
     set({
       message: json.responseMessage,
     })
+    return {
+      ok,
+      message: (json && json.responseMessage) || (ok ? 'Berhasil' : 'Gagal upload sales order'),
+    }
   },
   uploadPurchaseOrder: async (file) => {
     const url = process.env.REACT_APP_API_BASE_URL + 'po/post'
@@ -142,10 +149,15 @@ const useStore = create((set) => ({
       formData: formData,
     })
     const json = await response
+    const ok = Boolean(json) && json.httpOk === true
 
     set({
       message: json.responseMessage,
     })
+    return {
+      ok,
+      message: (json && json.responseMessage) || (ok ? 'Berhasil' : 'Gagal membatalkan pesanan'),
+    }
   },
   removePO: async (poNumber, sku) => {
     const url = process.env.REACT_APP_API_BASE_URL + 'po/delete'
@@ -326,13 +338,55 @@ const useStore = create((set) => ({
       summaryList: json.data,
     })
   },
-  updateProduct: async (sku, qty, hpp, price) => {
+  addProduct: async ({ sku, productName, qty, hpp, price, adminFee, ongkirFee, tax, seq }) => {
+    const url = process.env.REACT_APP_API_BASE_URL + 'product/post'
+    const formData = JSON.stringify({
+      sku: String(sku),
+      product_name: String(productName),
+      qty: String(qty),
+      hpp: String(hpp),
+      price: String(price),
+      admin_fee: String(adminFee),
+      ongkir_fee: String(ongkirFee),
+      tax: String(tax),
+      seq: String(seq),
+    })
+
+    const response = await ApiRequest({
+      url: url,
+      method: 'POST',
+      sku: sku,
+      productName: productName,
+      qty: qty,
+      hpp: hpp,
+      price: price,
+      adminFee: adminFee,
+      ongkirFee: ongkirFee,
+      tax: tax,
+      seq: seq,
+      formData: formData,
+    })
+    const json = await response
+    const ok = Boolean(json) && json.httpOk === true
+    set({
+      message: json.responseMessage,
+    })
+    return {
+      ok,
+      message: (json && json.responseMessage) || (ok ? 'Berhasil' : 'Gagal menyimpan produk'),
+    }
+  },
+  updateProduct: async (sku, qty, hpp, price, adminFee, ongkirFee, tax, seq) => {
     const url = process.env.REACT_APP_API_BASE_URL + 'product/put'
     const formData = JSON.stringify({
       sku: String(sku),
       qty: String(qty),
       hpp: String(hpp),
       price: String(price),
+      admin_fee: String(adminFee),
+      ongkir_fee: String(ongkirFee),
+      tax: String(tax),
+      seq: String(seq),
     })
 
     const response = await ApiRequest({
@@ -342,12 +396,21 @@ const useStore = create((set) => ({
       qty: qty,
       hpp: hpp,
       price: price,
+      adminFee: adminFee,
+      ongkirFee: ongkirFee,
+      tax: tax,
+      seq: seq,
       formData: formData,
     })
     const json = await response
+    const ok = Boolean(json) && json.httpOk === true
     set({
       message: json.responseMessage,
     })
+    return {
+      ok,
+      message: (json && json.responseMessage) || (ok ? 'Berhasil' : 'Gagal menyimpan perubahan'),
+    }
   },
 }))
 

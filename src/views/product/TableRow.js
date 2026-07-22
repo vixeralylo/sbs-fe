@@ -4,41 +4,69 @@ import { CButton } from '@coreui/react'
 import useStore from '../../zustand/store'
 import { NumericFormat } from 'react-number-format'
 
-const TableRow = ({ item, index, formatter }) => {
+const TableRow = ({ item, index, formatter, onNotify }) => {
   const { updateProduct } = useStore((state) => state)
 
+  const [updatedSeq, setUpdatedSeq] = useState(item.seq)
   const [updatedStock, setUpdatedStock] = useState(item.stock)
   const [updatedHpp, setUpdatedHpp] = useState(item.hpp)
   const [updatedPrice, setUpdatedPrice] = useState(item.price)
+  const [updatedAdminFee, setUpdatedAdminFee] = useState(item.admin_fee)
+  const [updatedOngkirFee, setUpdatedOngkirFee] = useState(item.ongkir_fee)
+  const [updatedTax, setUpdatedTax] = useState(item.tax)
 
-  const handleUpdate = (sku) => {
-    updateProduct(sku, updatedStock, updatedHpp, updatedPrice)
+  const isRow = item.product_name !== ''
+
+  const handleUpdate = async (sku) => {
+    const result = await updateProduct(
+      sku,
+      updatedStock,
+      updatedHpp,
+      updatedPrice,
+      updatedAdminFee,
+      updatedOngkirFee,
+      updatedTax,
+      updatedSeq,
+    )
+    const ok = result ? result.ok : false
+    if (onNotify) {
+      onNotify(ok, ok ? 'Perubahan tersimpan' : result && result.message)
+    }
   }
 
   const handleUpdateQty = (e) => {
-    const newStock = e.target.value
-    setUpdatedStock(newStock)
+    setUpdatedStock(e.target.value)
   }
 
   const handleUpdateHpp = (e) => {
-    const newHpp = e.target.value.replace(/,/g, '')
-    setUpdatedHpp(newHpp)
+    setUpdatedHpp(e.target.value.replace(/,/g, ''))
   }
 
   const handleUpdatePrice = (e) => {
-    const newPrice = e.target.value.replace(/,/g, '')
-    setUpdatedPrice(newPrice)
+    setUpdatedPrice(e.target.value.replace(/,/g, ''))
   }
 
   return (
-    <tr key={index} className={item.product_name === '' ? 'emptyTr' : 'normal'}>
-      <td>{item.product_name === '' ? '' : index + 1}</td>
-      <td>{item.product_name === '' ? '' : item.sku}</td>
+    <tr key={index} className={isRow ? 'normal' : 'emptyTr'}>
+      <td>
+        {isRow ? (
+          <input
+            className="qty_field"
+            type="number"
+            defaultValue={item.seq}
+            size={1}
+            onChange={(e) => setUpdatedSeq(e.target.value)}
+          />
+        ) : (
+          ''
+        )}
+      </td>
+      <td>{isRow ? item.sku : ''}</td>
       <td>
         <b>{item.product_name}</b>
       </td>
       <td>
-        {item.product_name !== '' ? (
+        {isRow ? (
           <input
             className="qty_field"
             type="number"
@@ -51,7 +79,7 @@ const TableRow = ({ item, index, formatter }) => {
         )}
       </td>
       <td>
-        {item.product_name !== '' ? (
+        {isRow ? (
           <NumericFormat
             className="hpp_field"
             value={item.hpp}
@@ -62,9 +90,9 @@ const TableRow = ({ item, index, formatter }) => {
           ''
         )}
       </td>
-      <td>{item.product_name !== '' ? formatter.format(item.stock * item.hpp) : ''}</td>
+      <td>{isRow ? formatter.format(item.stock * item.hpp) : ''}</td>
       <td>
-        {item.product_name !== '' ? (
+        {isRow ? (
           <NumericFormat
             className="price_field"
             value={item.price}
@@ -76,39 +104,76 @@ const TableRow = ({ item, index, formatter }) => {
           ''
         )}
       </td>
-      <td>{item.product_name !== '' ? formatter.format(item.gross) : ''}</td>
+      <td>{isRow ? formatter.format(item.gross) : ''}</td>
       <td>
-        {item.product_name !== '' && item.sku !== 'BUBBLE' ? (
-          <>
-            <NumericFormat
-              className="hpp_field"
-              value={item.clean_margin_tok}
-              thousandSeparator={true}
-              disabled
-            />
-            + {item.pct_tok} %
-          </>
+        {isRow ? (
+          <div className="fee-cell">
+            <span className="pct-input">
+              <input
+                className="pct_field"
+                type="number"
+                step="0.01"
+                defaultValue={item.admin_fee}
+                onChange={(e) => setUpdatedAdminFee(e.target.value)}
+              />
+              <span className="pct-suffix">%</span>
+            </span>
+            <span className="fee-amount">{formatter.format(item.admin_fee_amount)}</span>
+          </div>
         ) : (
           ''
         )}
       </td>
       <td>
-        {item.product_name !== '' && item.sku !== 'BUBBLE' ? (
-          <>
-            <NumericFormat
-              className="hpp_field"
-              value={item.clean_margin_sho}
-              thousandSeparator={true}
-              disabled
-            />
-            + {item.pct_sho} %
-          </>
+        {isRow ? (
+          <div className="fee-cell">
+            <span className="pct-input">
+              <input
+                className="pct_field"
+                type="number"
+                step="0.01"
+                defaultValue={item.ongkir_fee}
+                onChange={(e) => setUpdatedOngkirFee(e.target.value)}
+              />
+              <span className="pct-suffix">%</span>
+            </span>
+            <span className="fee-amount">{formatter.format(item.ongkir_fee_amount)}</span>
+          </div>
         ) : (
           ''
         )}
       </td>
       <td>
-        {item.product_name !== '' ? (
+        {isRow ? (
+          <div className="fee-cell">
+            <span className="pct-input">
+              <input
+                className="pct_field"
+                type="number"
+                step="0.01"
+                defaultValue={item.tax}
+                onChange={(e) => setUpdatedTax(e.target.value)}
+              />
+              <span className="pct-suffix">%</span>
+            </span>
+            <span className="fee-amount">{formatter.format(item.tax_amount)}</span>
+          </div>
+        ) : (
+          ''
+        )}
+      </td>
+      <td>
+        {isRow && item.sku !== 'BUBBLE' ? (
+          <div className="margin-cell">
+            <span className="margin-val">{formatter.format(item.clean_margin)}</span>
+            <span className="margin-pct">+{item.pct}%</span>
+          </div>
+        ) : (
+          ''
+        )}
+      </td>
+      <td className="col-action">
+        {isRow ? (
           <CButton size="sm" color="primary" onClick={() => handleUpdate(item.sku, item.stock)}>
             Submit
           </CButton>
@@ -124,6 +189,7 @@ TableRow.propTypes = {
   item: PropTypes.object.isRequired,
   index: PropTypes.number.isRequired,
   formatter: PropTypes.object.isRequired,
+  onNotify: PropTypes.func,
 }
 
 export default TableRow

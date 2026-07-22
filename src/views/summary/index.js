@@ -40,6 +40,7 @@ const Summary = () => {
                   <th scope="col">ADS</th>
                   <th scope="col">POTONGAN</th>
                   <th scope="col">LOST</th>
+                  <th scope="col">AFFILIATE</th>
                   <th scope="col">TAKE PROFIT</th>
                   <th scope="col">SUM</th>
                 </tr>
@@ -55,6 +56,7 @@ const Summary = () => {
                     <td>{formatNumber(items.SummaryDetail.total_ads)}</td>
                     <td>{formatNumber(items.SummaryDetail.total_potongan)}</td>
                     <td>{formatNumber(items.SummaryDetail.total_loss)}</td>
+                    <td>{formatNumber(items.SummaryDetail.sum_affiliate)}</td>
                     <td>{formatNumber(items.SummaryDetail.total_take_profit)}</td>
                     <td>{formatNumber(items.SummaryDetail.sum_total)}</td>
                   </tr>
