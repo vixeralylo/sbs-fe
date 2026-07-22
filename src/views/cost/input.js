@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import useStore from '../../zustand/store'
+import useToast from '../../components/useToast'
 import {
   CButton,
   CFormSelect,
@@ -19,7 +20,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import dayjs from 'dayjs'
 
 const CostInput = () => {
-  const { submitCost, message } = useStore((state) => state)
+  const { submitCost } = useStore((state) => state)
+  const { notify, toasterElement } = useToast()
 
   const [costType, setCostType] = useState('')
   const [costName, setCostName] = useState('')
@@ -68,7 +70,7 @@ const CostInput = () => {
     setMarketplaceId(e.target.value)
   }
   const handleUpdate = async () => {
-    submitCost({
+    const result = await submitCost({
       costType: costType,
       costDate: costDate,
       costName: costName,
@@ -79,6 +81,8 @@ const CostInput = () => {
       marketplaceId: marketplaceId,
       invoiceNo: invoiceNo,
     })
+    const ok = result ? result.ok : false
+    notify(ok, result && result.message)
   }
 
   return (
@@ -100,6 +104,7 @@ const CostInput = () => {
                 <option value="Gaji">Gaji</option>
                 <option value="Pln">Pln</option>
                 <option value="Ads">Ads</option>
+                <option value="Affiliate">Affiliate</option>
                 <option value="Material">Material</option>
                 <option value="Profit">Take Profit</option>
                 <option value="Loss">Loss</option>
@@ -182,12 +187,10 @@ const CostInput = () => {
                 Submit
               </CButton>
             </div>
-            <div className="mb-3">
-              <span id="Message">{message}</span>
-            </div>
           </CCardBody>
         </CCard>
       </CCol>
+      {toasterElement}
     </CRow>
   )
 }

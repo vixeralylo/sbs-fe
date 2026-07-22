@@ -14,7 +14,8 @@ const PurchaseOrder = () => {
 
   // Get the current date
   const currentDate = new Date()
-  const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
+  // Default start date: the 1st day of the month before the current month
+  const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
 
   // Format the date in yyyy/mm/dd format
   const formattedDate = currentDate

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import useStore from '../../zustand/store'
+import useToast from '../../components/useToast'
 import {
   CButton,
   CFormLabel,
@@ -12,7 +13,8 @@ import {
 } from '@coreui/react'
 
 const PurchaseOrderUpload = () => {
-  const { uploadPurchaseOrder, message } = useStore((state) => state)
+  const { uploadPurchaseOrder } = useStore((state) => state)
+  const { notify, toasterElement } = useToast()
 
   const [file, setFile] = useState(null)
 
@@ -21,7 +23,13 @@ const PurchaseOrderUpload = () => {
   }
 
   const handleUpload = async () => {
-    uploadPurchaseOrder(file)
+    if (!file) {
+      notify(false, 'Pilih file terlebih dahulu')
+      return
+    }
+    const result = await uploadPurchaseOrder(file)
+    const ok = result ? result.ok : false
+    notify(ok, result && result.message)
   }
 
   return (
@@ -41,12 +49,10 @@ const PurchaseOrderUpload = () => {
                 Submit
               </CButton>
             </div>
-            <div className="mb-3">
-              <span id="Message">{message}</span>
-            </div>
           </CCardBody>
         </CCard>
       </CCol>
+      {toasterElement}
     </CRow>
   )
 }

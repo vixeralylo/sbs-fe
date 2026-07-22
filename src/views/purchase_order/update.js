@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import useStore from '../../zustand/store'
+import useToast from '../../components/useToast'
 import {
   CButton,
   CFormLabel,
@@ -16,7 +17,8 @@ import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 
 const PurchaseOrderUpdate = () => {
-  const { updatePurchaseOrder, message } = useStore((state) => state)
+  const { updatePurchaseOrder } = useStore((state) => state)
+  const { notify, toasterElement } = useToast()
 
   const [poNumber, setPoNumber] = useState('')
   const [status, setStatus] = useState('')
@@ -29,7 +31,9 @@ const PurchaseOrderUpdate = () => {
   }
 
   const handleUpdate = async () => {
-    updatePurchaseOrder(poNumber, status)
+    const result = await updatePurchaseOrder(poNumber, status)
+    const ok = result ? result.ok : false
+    notify(ok, result && result.message)
   }
 
   return (
@@ -69,12 +73,10 @@ const PurchaseOrderUpdate = () => {
                 Submit
               </CButton>
             </div>
-            <div className="mb-3">
-              <span id="Message">{message}</span>
-            </div>
           </CCardBody>
         </CCard>
       </CCol>
+      {toasterElement}
     </CRow>
   )
 }

@@ -1,7 +1,25 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import useStore from '../../zustand/store'
 import { useParams } from 'react-router-dom'
-import { CCard, CCardBody, CCardHeader, CCol, CRow, CFormLabel, CFormInput } from '@coreui/react'
+import {
+  CCard,
+  CCardBody,
+  CCardHeader,
+  CCol,
+  CRow,
+  CFormLabel,
+  CFormInput,
+  CButton,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
+  CToast,
+  CToastBody,
+  CToastClose,
+  CToaster,
+} from '@coreui/react'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -20,6 +38,7 @@ const SalesOrderPages = () => {
     sumMargin,
     sumAdmin,
     sumOngkir,
+    sumTax,
     sumCleanMargin,
     removeOrder,
   } = useStore((state) => state)
@@ -43,6 +62,24 @@ const SalesOrderPages = () => {
   const [isNotPayment, setValueIsNotPayment] = useState('')
   const [soNumber, setValueSo] = useState('')
 
+  const [confirmVisible, setConfirmVisible] = useState(false)
+  const [targetInvoice, setTargetInvoice] = useState('')
+  const [deleting, setDeleting] = useState(false)
+
+  const toaster = useRef()
+  const [toast, setToast] = useState(0)
+
+  const notify = (ok, message) => {
+    setToast(
+      <CToast autohide={false} visible className={`text-white ${ok ? 'bg-success' : 'bg-danger'}`}>
+        <div className="d-flex">
+          <CToastBody>{message || (ok ? 'Berhasil' : 'Gagal')}</CToastBody>
+          <CToastClose className="me-2 m-auto" white />
+        </div>
+      </CToast>,
+    )
+  }
+
   const handleSoChange = (event) => {
     setValueSo(event.target.value)
   }
@@ -51,13 +88,23 @@ const SalesOrderPages = () => {
     setValueIsNotPayment(event.target.checked)
   }
 
-  const handleRemoveOrder = (soNumber) => {
-    // Display a confirmation dialog before deleting
-    const isConfirmed = window.confirm('Yakin ingin menghapus pesanan ini?')
+  const openConfirm = (invoiceNo) => {
+    setTargetInvoice(invoiceNo)
+    setConfirmVisible(true)
+  }
 
-    if (isConfirmed) {
-      removeOrder(soNumber)
-      setValueSo('')
+  const handleConfirmRemove = async () => {
+    setDeleting(true)
+    try {
+      const result = await removeOrder(targetInvoice)
+      const ok = result ? result.ok : false
+      notify(ok, ok ? 'Pesanan berhasil dibatalkan' : result && result.message)
+      if (ok) {
+        fetchOrder(marketplace, firstDate, endDate, soNumber, isNotPayment)
+      }
+    } finally {
+      setDeleting(false)
+      setConfirmVisible(false)
     }
   }
 
@@ -128,6 +175,7 @@ const SalesOrderPages = () => {
                   <th scope="col">{formatter.format(sumMargin)}</th>
                   <th scope="col">{formatter.format(sumAdmin)}</th>
                   <th scope="col">{formatter.format(sumOngkir)}</th>
+                  <th scope="col">{formatter.format(sumTax)}</th>
                   <th scope="col">{formatter.format(sumCleanMargin)}</th>
                 </tr>
                 <tr>
@@ -141,6 +189,7 @@ const SalesOrderPages = () => {
                   <th scope="col">Gross</th>
                   <th scope="col">Admin</th>
                   <th scope="col">Ongkir</th>
+                  <th scope="col">Tax</th>
                   <th scope="col">Clean Margin</th>
                 </tr>
               </thead>
@@ -161,12 +210,10 @@ const SalesOrderPages = () => {
                     <td>{formatter.format(items.gross_margin)}</td>
                     <td>{formatter.format(items.power_merchant_fee)}</td>
                     <td>{formatter.format(items.ongkir_fee)}</td>
+                    <td>{formatter.format(items.tax)}</td>
                     <td>{formatter.format(Math.round(items.clean_margin))}</td>
                     <td>
-                      <p
-                        onClick={() => handleRemoveOrder(items.invoice_no)}
-                        className="remove_order"
-                      >
+                      <p onClick={() => openConfirm(items.invoice_no)} className="remove_order">
                         Cancel
                       </p>
                     </td>
@@ -177,6 +224,30 @@ const SalesOrderPages = () => {
           </CCardBody>
         </CCard>
       </CCol>
+
+      <CModal visible={confirmVisible} onClose={() => setConfirmVisible(false)} alignment="center">
+        <CModalHeader>
+          <CModalTitle>Batalkan Pesanan</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          Yakin ingin membatalkan pesanan <strong>{targetInvoice}</strong>?
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" variant="ghost" onClick={() => setConfirmVisible(false)}>
+            Tidak
+          </CButton>
+          <CButton
+            color="danger"
+            className="text-white"
+            onClick={handleConfirmRemove}
+            disabled={deleting}
+          >
+            {deleting ? 'Membatalkan...' : 'Ya, Batalkan'}
+          </CButton>
+        </CModalFooter>
+      </CModal>
+
+      <CToaster ref={toaster} push={toast} placement="top-end" />
     </CRow>
   )
 }
