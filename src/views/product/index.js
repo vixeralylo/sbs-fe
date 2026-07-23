@@ -1,40 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect } from 'react'
 import TableRow from './TableRow' // Import the new component
 import AddProduct from './AddProduct'
 import useStore from '../../zustand/store'
-import {
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CCol,
-  CRow,
-  CToast,
-  CToastBody,
-  CToastClose,
-  CToaster,
-} from '@coreui/react'
+import useToast from '../../components/useToast'
+import { CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
 
 const ProductPages = () => {
   const { fetchProduct, productList, sisaPersediaan } = useStore((state) => state)
+  const { notify, toasterElement } = useToast()
+
   useEffect(() => {
     fetchProduct()
   }, [fetchProduct])
 
   const formatter = new Intl.NumberFormat('pt-BR')
-
-  const toaster = useRef()
-  const [toast, setToast] = useState(0)
-
-  const notify = (ok, message) => {
-    setToast(
-      <CToast autohide={false} visible className={`text-white ${ok ? 'bg-success' : 'bg-danger'}`}>
-        <div className="d-flex">
-          <CToastBody>{message || (ok ? 'Berhasil' : 'Gagal')}</CToastBody>
-          <CToastClose className="me-2 m-auto" white />
-        </div>
-      </CToast>,
-    )
-  }
 
   return (
     <CRow>
@@ -92,7 +71,7 @@ const ProductPages = () => {
           </CCardBody>
         </CCard>
       </CCol>
-      <CToaster ref={toaster} push={toast} placement="top-end" />
+      {toasterElement}
     </CRow>
   )
 }

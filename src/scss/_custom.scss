@@ -189,8 +189,9 @@ body {
 .table > thead .col-action {
   background: #fafbff;
 }
-// Compact submit button in the action column
-.table .col-action .btn {
+// Compact table buttons (product Submit, sales-order Pay/Cancel, etc.)
+.table .col-action .btn,
+.btn-compact {
   padding: .25rem .55rem;
   font-size: .72rem;
   border-radius: 7px;

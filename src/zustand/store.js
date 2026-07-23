@@ -184,10 +184,16 @@ const useStore = create((set) => ({
       formData: formData,
     })
     const json = await response
+    const ok = Boolean(json) && json.httpOk === true
 
     set({
       message: json.responseMessage,
     })
+    return {
+      ok,
+      message:
+        (json && json.responseMessage) || (ok ? 'Berhasil' : 'Gagal menghapus purchase order'),
+    }
   },
   fetchPurchaseOrder: async (start_date, end_date, isNotPayment) => {
     const start_date_object = new Date(start_date.$d)
@@ -195,17 +201,22 @@ const useStore = create((set) => ({
     const end_date_object = new Date(end_date.$d)
     const end_date_parsed = dayjs(end_date_object).format('YYYY-MM-DD')
     const url = process.env.REACT_APP_API_BASE_URL + 'po/get'
-    const formData = JSON.stringify({
+    // Only send is_not_payment when the "belum dibayar" filter is checked;
+    // otherwise omit it so the backend returns all purchase orders.
+    const payload = {
       start_date: start_date_parsed,
       end_date: end_date_parsed,
-      is_not_payment: isNotPayment.toString() === 'true' ? 'false' : 'true',
-    })
+    }
+    if (isNotPayment) {
+      payload.is_not_payment = 'true'
+    }
+    const formData = JSON.stringify(payload)
     const response = await ApiRequest({
       url: url,
       method: 'POST',
       start_date: start_date_parsed,
       end_date: end_date_parsed,
-      isNotPayment: !isNotPayment,
+      isNotPayment: !!isNotPayment,
       formData: formData,
     })
     const json = await response

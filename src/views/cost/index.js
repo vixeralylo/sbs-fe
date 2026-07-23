@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import useStore from '../../zustand/store'
+import useToast from '../../components/useToast'
+import CostInputModal from './CostInputModal'
 import { CCard, CCardBody, CCardHeader, CCol, CRow, CFormLabel } from '@coreui/react'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -9,6 +11,7 @@ import dayjs from 'dayjs'
 
 const Cost = () => {
   const { costList, fetchCost } = useStore((state) => state)
+  const { notify, toasterElement } = useToast()
 
   const formatter = new Intl.NumberFormat('pt-BR')
 
@@ -35,8 +38,9 @@ const Cost = () => {
     <CRow>
       <CCol xs={12}>
         <CCard className="mb-4">
-          <CCardHeader>
+          <CCardHeader className="d-flex justify-content-between align-items-center">
             <strong>Cost List</strong>
+            <CostInputModal onSaved={() => fetchCost(firstDate, endDate)} onNotify={notify} />
           </CCardHeader>
           <CCardBody>
             <div className="row align-items-end">
@@ -98,6 +102,7 @@ const Cost = () => {
           </CCardBody>
         </CCard>
       </CCol>
+      {toasterElement}
     </CRow>
   )
 }

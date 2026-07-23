@@ -31,11 +31,6 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Update Order',
-    to: '/sales_order/update',
-  },
-  {
-    component: CNavItem,
     name: 'Offline',
     to: '/sales_order_offline',
   },
@@ -50,11 +45,6 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Upload Purchase Order',
-    to: '/purchase_order/upload',
-  },
-  {
-    component: CNavItem,
     name: 'Update Purchase Order',
     to: '/purchase_order/update',
   },
@@ -66,11 +56,6 @@ const _nav = [
     component: CNavItem,
     name: 'Cost',
     to: '/cost/list',
-  },
-  {
-    component: CNavItem,
-    name: 'Input Cost',
-    to: '/cost/input',
   },
   {
     component: CNavTitle,
