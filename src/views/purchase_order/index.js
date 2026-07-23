@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import useStore from '../../zustand/store'
-import { CCard, CCardBody, CCardHeader, CCol, CRow, CFormLabel } from '@coreui/react'
+import useToast from '../../components/useToast'
+import UploadModal from './UploadModal'
+import {
+  CBadge,
+  CButton,
+  CCard,
+  CCardBody,
+  CCardHeader,
+  CCol,
+  CRow,
+  CFormLabel,
+} from '@coreui/react'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -9,6 +20,7 @@ import dayjs from 'dayjs'
 
 const PurchaseOrder = () => {
   const { purchaseOrderList, fetchPurchaseOrder, removePO } = useStore((state) => state)
+  const { notify, toasterElement } = useToast()
 
   const formatter = new Intl.NumberFormat('pt-BR')
 
@@ -33,12 +45,18 @@ const PurchaseOrder = () => {
     setValueIsNotPayment(event.target.checked)
   }
 
-  const handleRemoveOrder = (poNumber, sku) => {
+  const handleRemoveOrder = async (poNumber, sku) => {
     // Display a confirmation dialog before deleting
     const isConfirmed = window.confirm('Yakin ingin menghapus pesanan ini?')
 
     if (isConfirmed) {
-      removePO(poNumber, sku)
+      const result = await removePO(poNumber, sku)
+      const ok = result ? result.ok : false
+      notify(ok, ok ? 'Purchase order berhasil dihapus' : result && result.message)
+      if (ok) {
+        // Re-fetch to refresh the list after a successful delete
+        fetchPurchaseOrder(firstDate, endDate, isNotPayment)
+      }
     }
   }
 
@@ -50,8 +68,12 @@ const PurchaseOrder = () => {
     <CRow>
       <CCol xs={12}>
         <CCard className="mb-4">
-          <CCardHeader>
+          <CCardHeader className="d-flex justify-content-between align-items-center">
             <strong>Purchase Order</strong>
+            <UploadModal
+              onUploaded={() => fetchPurchaseOrder(firstDate, endDate, isNotPayment)}
+              onNotify={notify}
+            />
           </CCardHeader>
           <CCardBody>
             <div className="row align-items-end">
@@ -119,14 +141,20 @@ const PurchaseOrder = () => {
                     <td>{formatter.format(items.discount)}</td>
                     <td>{formatter.format(items.ppn)}</td>
                     <td>{formatter.format(items.total_price)}</td>
-                    <td>{items.is_payment ? 'paid' : 'unpaid'}</td>
                     <td>
-                      <p
+                      <CBadge color={items.is_payment ? 'success' : 'danger'}>
+                        {items.is_payment ? 'paid' : 'unpaid'}
+                      </CBadge>
+                    </td>
+                    <td>
+                      <CButton
+                        size="sm"
+                        color="danger"
+                        className="text-white btn-compact"
                         onClick={() => handleRemoveOrder(items.po_number, items.sku)}
-                        className="remove_order"
                       >
-                        Cancel
-                      </p>
+                        Hapus
+                      </CButton>
                     </td>
                   </tr>
                 ))}
@@ -135,6 +163,7 @@ const PurchaseOrder = () => {
           </CCardBody>
         </CCard>
       </CCol>
+      {toasterElement}
     </CRow>
   )
 }

@@ -1,5 +1,6 @@
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import useStore from '../../zustand/store'
+import useToast from '../../components/useToast'
 import {
   CButton,
   CFormLabel,
@@ -9,31 +10,14 @@ import {
   CCardHeader,
   CCol,
   CRow,
-  CToast,
-  CToastBody,
-  CToastClose,
-  CToaster,
 } from '@coreui/react'
 
 const SalesOrderUpload = () => {
   const { uploadSalesOrder } = useStore((state) => state)
+  const { notify, toasterElement } = useToast()
 
   const [file, setFile] = useState(null)
   const [uploading, setUploading] = useState(false)
-
-  const toaster = useRef()
-  const [toast, setToast] = useState(0)
-
-  const notify = (ok, message) => {
-    setToast(
-      <CToast autohide={false} visible className={`text-white ${ok ? 'bg-success' : 'bg-danger'}`}>
-        <div className="d-flex">
-          <CToastBody>{message || (ok ? 'Berhasil' : 'Gagal')}</CToastBody>
-          <CToastClose className="me-2 m-auto" white />
-        </div>
-      </CToast>,
-    )
-  }
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0])
@@ -74,7 +58,7 @@ const SalesOrderUpload = () => {
           </CCardBody>
         </CCard>
       </CCol>
-      <CToaster ref={toaster} push={toast} placement="top-end" />
+      {toasterElement}
     </CRow>
   )
 }
