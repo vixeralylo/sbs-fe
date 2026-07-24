@@ -1,17 +1,19 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import TableRow from './TableRow' // Import the new component
 import AddProduct from './AddProduct'
 import useStore from '../../zustand/store'
 import useToast from '../../components/useToast'
-import { CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
+import { CCard, CCardBody, CCardHeader, CCol, CRow, CFormCheck } from '@coreui/react'
 
 const ProductPages = () => {
   const { fetchProduct, productList, sisaPersediaan } = useStore((state) => state)
   const { notify, toasterElement } = useToast()
 
+  const [showDeactivated, setShowDeactivated] = useState(false)
+
   useEffect(() => {
-    fetchProduct()
-  }, [fetchProduct])
+    fetchProduct(showDeactivated)
+  }, [fetchProduct, showDeactivated])
 
   const formatter = new Intl.NumberFormat('pt-BR')
 
@@ -21,12 +23,18 @@ const ProductPages = () => {
         <CCard className="mb-4">
           <CCardHeader className="d-flex justify-content-between align-items-center flex-wrap gap-2">
             <strong>Product List</strong>
-            <div className="d-flex align-items-center gap-2">
+            <div className="d-flex align-items-center gap-3">
+              <CFormCheck
+                id="showDeactivated"
+                label="Tampilkan produk nonaktif"
+                checked={showDeactivated}
+                onChange={(e) => setShowDeactivated(e.target.checked)}
+              />
               <span className="total-stok">
                 Total Sisa Persediaan
                 <b>{formatter.format(sisaPersediaan)}</b>
               </span>
-              <AddProduct onAdded={fetchProduct} onNotify={notify} />
+              <AddProduct onAdded={() => fetchProduct(showDeactivated)} onNotify={notify} />
             </div>
           </CCardHeader>
           <CCardBody>
@@ -50,7 +58,7 @@ const ProductPages = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {productList.map((item, index) => {
+                  {(productList || []).map((item, index) => {
                     const rowKey =
                       item.product_name === ''
                         ? `sep-${index}`
@@ -62,6 +70,8 @@ const ProductPages = () => {
                         index={index}
                         formatter={formatter}
                         onNotify={notify}
+                        onRefresh={() => fetchProduct(showDeactivated)}
+                        deactivated={showDeactivated}
                       />
                     )
                   })}
