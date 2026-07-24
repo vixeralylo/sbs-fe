@@ -10,7 +10,14 @@ import {
   CRow,
   CFormLabel,
   CFormInput,
+  CForm,
+  CFormFeedback,
   CButton,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
 } from '@coreui/react'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -23,6 +30,8 @@ const SalesOrderPages = () => {
   const [qty, setQty] = useState('')
   const [price, setPrice] = useState('')
   const [totalPrice, setTotalPrice] = useState('')
+  const [invoiceNo, setInvoiceNo] = useState('')
+  const [validated, setValidated] = useState(false)
 
   // Get the current date
   const currentDate = new Date()
@@ -49,6 +58,7 @@ const SalesOrderPages = () => {
     sumOngkir,
     sumCleanMargin,
     submitSoOffline,
+    removeOrder,
   } = useStore((state) => state)
   const { notify, toasterElement } = useToast()
 
@@ -57,12 +67,19 @@ const SalesOrderPages = () => {
   const [firstDate, setValueFirstDate] = useState(dayjs(firstDay))
   const [endDate, setValueEndDate] = useState(dayjs(formattedDate))
 
+  const [confirmVisible, setConfirmVisible] = useState(false)
+  const [targetInvoice, setTargetInvoice] = useState('')
+  const [processing, setProcessing] = useState(false)
+
   useEffect(() => {
     fetchOrder('offline', firstDate, endDate, '', '')
   }, [fetchOrder, firstDate, endDate])
 
   const handleSkuChange = (e) => {
     setSku(e.target.value)
+  }
+  const handleInvoiceChange = (e) => {
+    setInvoiceNo(e.target.value)
   }
   const handleQtyChange = (e) => {
     setQty(e.target.value)
@@ -72,7 +89,13 @@ const SalesOrderPages = () => {
     setPrice(e.target.value)
     setTotalPrice(parseInt(e.target.value * qty, 10))
   }
-  const handleUpdate = async () => {
+  const handleUpdate = async (e) => {
+    e.preventDefault()
+    const formEl = e.currentTarget
+    if (formEl.checkValidity() === false) {
+      setValidated(true)
+      return
+    }
     const result = await submitSoOffline({
       soDate: soDate,
       sku: sku,
@@ -80,10 +103,34 @@ const SalesOrderPages = () => {
       price: price,
       totalPrice: totalPrice,
       marketplaceId: 'Offline',
-      invoice_no: '',
+      invoiceNo: invoiceNo,
     })
     const ok = result ? result.ok : false
     notify(ok, result && result.message)
+    if (ok) {
+      setValidated(false)
+      fetchOrder('offline', firstDate, endDate, '', '')
+    }
+  }
+
+  const openConfirm = (invoiceNo) => {
+    setTargetInvoice(invoiceNo)
+    setConfirmVisible(true)
+  }
+
+  const handleConfirmRemove = async () => {
+    setProcessing(true)
+    try {
+      const result = await removeOrder(targetInvoice) // so/delete
+      const ok = result ? result.ok : false
+      notify(ok, ok ? 'Pesanan berhasil dibatalkan' : result && result.message)
+      if (ok) {
+        fetchOrder('offline', firstDate, endDate, '', '')
+      }
+    } finally {
+      setProcessing(false)
+      setConfirmVisible(false)
+    }
   }
 
   return (
@@ -94,48 +141,77 @@ const SalesOrderPages = () => {
             <strong>Input Offline</strong>
           </CCardHeader>
           <CCardBody>
-            <div className="mb-3">
-              <InputLabel id="demo-simple-select-label">Date</InputLabel>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={['DatePicker', 'DatePicker']}>
-                  <DatePicker value={soDate} onChange={(newValue) => setValueSoDate(newValue)} />
-                </DemoContainer>
-              </LocalizationProvider>
-            </div>
-            <div className="mb-3">
-              <CFormLabel>SKU</CFormLabel>
-              <CFormInput type="text" id="inputName" value={sku} onChange={handleSkuChange} />
-            </div>
-            <div className="row">
-              <div className="col-1">
-                <div className="mb-3">
-                  <CFormLabel>Qty</CFormLabel>
-                  <CFormInput type="number" id="inputQty" value={qty} onChange={handleQtyChange} />
+            <CForm noValidate validated={validated} onSubmit={handleUpdate}>
+              <div className="mb-3">
+                <InputLabel id="demo-simple-select-label">Date</InputLabel>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={['DatePicker', 'DatePicker']}>
+                    <DatePicker value={soDate} onChange={(newValue) => setValueSoDate(newValue)} />
+                  </DemoContainer>
+                </LocalizationProvider>
+              </div>
+              <div className="mb-3">
+                <CFormLabel>SKU</CFormLabel>
+                <CFormInput
+                  type="text"
+                  id="inputName"
+                  value={sku}
+                  onChange={handleSkuChange}
+                  required
+                />
+                <CFormFeedback invalid>Wajib diisi.</CFormFeedback>
+              </div>
+              <div className="mb-3">
+                <CFormLabel>Invoice No</CFormLabel>
+                <CFormInput
+                  type="text"
+                  id="inputInvoice"
+                  value={invoiceNo}
+                  onChange={handleInvoiceChange}
+                  required
+                />
+                <CFormFeedback invalid>Wajib diisi.</CFormFeedback>
+              </div>
+              <div className="row">
+                <div className="col-2">
+                  <div className="mb-3">
+                    <CFormLabel>Qty</CFormLabel>
+                    <CFormInput
+                      type="number"
+                      id="inputQty"
+                      value={qty}
+                      onChange={handleQtyChange}
+                      required
+                    />
+                    <CFormFeedback invalid>Wajib diisi.</CFormFeedback>
+                  </div>
+                </div>
+                <div className="col-4">
+                  <div className="mb-3">
+                    <CFormLabel>Price</CFormLabel>
+                    <CFormInput
+                      type="number"
+                      id="inputPrice"
+                      value={price}
+                      onChange={handlePriceChange}
+                      required
+                    />
+                    <CFormFeedback invalid>Wajib diisi.</CFormFeedback>
+                  </div>
+                </div>
+                <div className="col-4">
+                  <div className="mb-3">
+                    <CFormLabel>Total Price</CFormLabel>
+                    <CFormInput disabled type="number" id="inputTotal" value={totalPrice} />
+                  </div>
                 </div>
               </div>
-              <div className="col-4">
-                <div className="mb-3">
-                  <CFormLabel>Price</CFormLabel>
-                  <CFormInput
-                    type="number"
-                    id="inputPrice"
-                    value={price}
-                    onChange={handlePriceChange}
-                  />
-                </div>
+              <div className="mb-3">
+                <CButton color="primary" type="submit">
+                  Submit
+                </CButton>
               </div>
-              <div className="col-4">
-                <div className="mb-3">
-                  <CFormLabel>Total Price</CFormLabel>
-                  <CFormInput disabled type="number" id="inputPrice" value={totalPrice} />
-                </div>
-              </div>
-            </div>
-            <div className="mb-3">
-              <CButton color="primary" onClick={() => handleUpdate()}>
-                Submit
-              </CButton>
-            </div>
+            </CForm>
           </CCardBody>
         </CCard>
       </CCol>
@@ -183,6 +259,7 @@ const SalesOrderPages = () => {
                   <th scope="col">{formatter.format(sumAdmin)}</th>
                   <th scope="col">{formatter.format(sumOngkir)}</th>
                   <th scope="col">{formatter.format(sumCleanMargin)}</th>
+                  <th scope="col"></th>
                 </tr>
                 <tr>
                   <th scope="col">#</th>
@@ -196,6 +273,7 @@ const SalesOrderPages = () => {
                   <th scope="col">Admin</th>
                   <th scope="col">Ongkir</th>
                   <th scope="col">Clean Margin</th>
+                  <th scope="col">Aksi</th>
                 </tr>
               </thead>
               <tbody>
@@ -216,6 +294,16 @@ const SalesOrderPages = () => {
                     <td>{formatter.format(items.power_merchant_fee)}</td>
                     <td>{formatter.format(items.ongkir_fee)}</td>
                     <td>{formatter.format(Math.round(items.clean_margin))}</td>
+                    <td>
+                      <CButton
+                        size="sm"
+                        color="danger"
+                        className="text-white btn-compact"
+                        onClick={() => openConfirm(items.invoice_no)}
+                      >
+                        Cancel
+                      </CButton>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -223,6 +311,29 @@ const SalesOrderPages = () => {
           </CCardBody>
         </CCard>
       </CCol>
+
+      <CModal visible={confirmVisible} onClose={() => setConfirmVisible(false)} alignment="center">
+        <CModalHeader>
+          <CModalTitle>Batalkan Pesanan</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          Yakin ingin membatalkan pesanan <strong>{targetInvoice}</strong>?
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" variant="ghost" onClick={() => setConfirmVisible(false)}>
+            Tidak
+          </CButton>
+          <CButton
+            color="danger"
+            className="text-white"
+            onClick={handleConfirmRemove}
+            disabled={processing}
+          >
+            {processing ? 'Memproses...' : 'Ya, Batalkan'}
+          </CButton>
+        </CModalFooter>
+      </CModal>
+
       {toasterElement}
     </CRow>
   )
