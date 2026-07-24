@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { CButton } from '@coreui/react'
+import { CButton, CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter } from '@coreui/react'
 import useStore from '../../zustand/store'
 import { NumericFormat } from 'react-number-format'
 
-const TableRow = ({ item, index, formatter, onNotify }) => {
+const TableRow = ({ item, index, formatter, onNotify, onRefresh, deactivated }) => {
   const { updateProduct } = useStore((state) => state)
 
   const [updatedSeq, setUpdatedSeq] = useState(item.seq)
@@ -15,7 +15,11 @@ const TableRow = ({ item, index, formatter, onNotify }) => {
   const [updatedOngkirFee, setUpdatedOngkirFee] = useState(item.ongkir_fee)
   const [updatedTax, setUpdatedTax] = useState(item.tax)
 
+  const [confirmVisible, setConfirmVisible] = useState(false)
+  const [processing, setProcessing] = useState(false)
+
   const isRow = item.product_name !== ''
+  const nextDeleted = !deactivated // true => deactivate, false => reactivate
 
   const handleUpdate = async (sku) => {
     const result = await updateProduct(
@@ -31,6 +35,34 @@ const TableRow = ({ item, index, formatter, onNotify }) => {
     const ok = result ? result.ok : false
     if (onNotify) {
       onNotify(ok, ok ? 'Perubahan tersimpan' : result && result.message)
+    }
+  }
+
+  const handleConfirmToggle = async () => {
+    setProcessing(true)
+    try {
+      const result = await updateProduct(
+        item.sku,
+        updatedStock,
+        updatedHpp,
+        updatedPrice,
+        updatedAdminFee,
+        updatedOngkirFee,
+        updatedTax,
+        updatedSeq,
+        nextDeleted, // is_deleted
+      )
+      const ok = result ? result.ok : false
+      const successMsg = nextDeleted ? 'Produk dinonaktifkan' : 'Produk diaktifkan'
+      if (onNotify) {
+        onNotify(ok, ok ? successMsg : result && result.message)
+      }
+      if (ok && onRefresh) {
+        onRefresh()
+      }
+    } finally {
+      setProcessing(false)
+      setConfirmVisible(false)
     }
   }
 
@@ -174,12 +206,54 @@ const TableRow = ({ item, index, formatter, onNotify }) => {
       </td>
       <td className="col-action">
         {isRow ? (
-          <CButton size="sm" color="primary" onClick={() => handleUpdate(item.sku, item.stock)}>
-            Submit
-          </CButton>
+          <div className="d-flex gap-1">
+            <CButton
+              size="sm"
+              color="primary"
+              className="btn-compact"
+              onClick={() => handleUpdate(item.sku, item.stock)}
+            >
+              Submit
+            </CButton>
+            <CButton
+              size="sm"
+              color={deactivated ? 'success' : 'danger'}
+              className="text-white btn-compact"
+              onClick={() => setConfirmVisible(true)}
+            >
+              {deactivated ? 'Activate' : 'Deactivate'}
+            </CButton>
+          </div>
         ) : (
           ''
         )}
+
+        <CModal
+          visible={confirmVisible}
+          onClose={() => setConfirmVisible(false)}
+          alignment="center"
+        >
+          <CModalHeader>
+            <CModalTitle>{nextDeleted ? 'Nonaktifkan Produk' : 'Aktifkan Produk'}</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            {nextDeleted ? 'Nonaktifkan produk ' : 'Aktifkan kembali produk '}
+            <strong>{item.product_name}</strong>?
+          </CModalBody>
+          <CModalFooter>
+            <CButton color="secondary" variant="ghost" onClick={() => setConfirmVisible(false)}>
+              Tidak
+            </CButton>
+            <CButton
+              color={nextDeleted ? 'danger' : 'success'}
+              className="text-white"
+              onClick={handleConfirmToggle}
+              disabled={processing}
+            >
+              {processing ? 'Memproses...' : nextDeleted ? 'Ya, Nonaktifkan' : 'Ya, Aktifkan'}
+            </CButton>
+          </CModalFooter>
+        </CModal>
       </td>
     </tr>
   )
@@ -190,6 +264,8 @@ TableRow.propTypes = {
   index: PropTypes.number.isRequired,
   formatter: PropTypes.object.isRequired,
   onNotify: PropTypes.func,
+  onRefresh: PropTypes.func,
+  deactivated: PropTypes.bool,
 }
 
 export default TableRow

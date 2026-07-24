@@ -31,20 +31,23 @@ const useStore = create((set) => ({
       endDate: end_date,
     })
   },
-  fetchProduct: async () => {
+  fetchProduct: async (showDeactivated) => {
     const url = process.env.REACT_APP_API_BASE_URL + 'product/get'
 
-    console.log(url)
+    // Only send is_deleted when the "show deactivated" filter is on;
+    // otherwise omit it so the backend returns active products.
+    const formData = showDeactivated ? JSON.stringify({ is_deleted: true }) : undefined
 
     const response = await ApiRequest({
       url: url,
       method: 'POST',
+      formData: formData,
     })
     const json = await response
 
     set({
       sisaPersediaan: json.data.sisa_persediaan,
-      productList: json.data.SbsProductList,
+      productList: json.data.SbsProductList || [],
     })
   },
   fetchOrder: async (marketplace, start_date, end_date, soNumber, isNotPayment) => {
@@ -412,7 +415,7 @@ const useStore = create((set) => ({
       message: (json && json.responseMessage) || (ok ? 'Berhasil' : 'Gagal menyimpan produk'),
     }
   },
-  updateProduct: async (sku, qty, hpp, price, adminFee, ongkirFee, tax, seq) => {
+  updateProduct: async (sku, qty, hpp, price, adminFee, ongkirFee, tax, seq, isDeleted = false) => {
     const url = process.env.REACT_APP_API_BASE_URL + 'product/put'
     const formData = JSON.stringify({
       sku: String(sku),
@@ -423,6 +426,7 @@ const useStore = create((set) => ({
       ongkir_fee: String(ongkirFee),
       tax: String(tax),
       seq: String(seq),
+      is_deleted: Boolean(isDeleted),
     })
 
     const response = await ApiRequest({
@@ -436,6 +440,7 @@ const useStore = create((set) => ({
       ongkirFee: ongkirFee,
       tax: tax,
       seq: seq,
+      isDeleted: isDeleted,
       formData: formData,
     })
     const json = await response
